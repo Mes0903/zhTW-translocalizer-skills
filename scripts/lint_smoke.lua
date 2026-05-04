@@ -73,9 +73,28 @@ local function trim(value)
   return (tostring(value or ""):gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
+local function current_dir()
+  local handle = io.popen("pwd")
+  if not handle then
+    return "."
+  end
+  local path = handle:read("*l") or "."
+  handle:close()
+  return path
+end
+
+local function absolutize_command(command)
+  command = tostring(command or "")
+  if command:match("^/") or not command:find("/", 1, true) then
+    return command
+  end
+  return current_dir() .. "/" .. command
+end
+
 local script_path = arg[0] or "scripts/lint_smoke.lua"
 local repo_root = script_path:match("^(.*)/scripts/[^/]+$") or "."
 local lint_script = repo_root .. "/scripts/lint.lua"
+local lua_cmd = shell_quote(absolutize_command(os.getenv("LUA") or arg[-1] or "lua5.4"))
 local smoke_project_root = repo_root .. "/working/_lint_smoke_project"
 local smoke_glossary_path = smoke_project_root .. "/glossary.md"
 local smoke_glossary = [[| 英文 | 臺灣用語 |
@@ -89,7 +108,7 @@ local cases = {
     name = "default_disables_l005",
     text = "<style>body{color:red;}</style>\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "default_disables_l005")
@@ -100,7 +119,7 @@ local cases = {
     name = "manual_enable_l005",
     text = "<style>body{color:red;}</style>\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L005 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L005 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L005]", "manual_enable_l005")
@@ -111,7 +130,7 @@ local cases = {
     name = "markdown_grouped_output_merges_locations",
     text = "前言：\n```cpp\nint main() {}\n```\n結語。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --format markdown --rules L036 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --format markdown --rules L036 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "# Lint Report", "markdown_grouped_output_merges_locations")
@@ -128,7 +147,7 @@ local cases = {
     name = "markdown_output_reports_zero_warnings",
     text = "正文。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --format markdown --rules L003 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --format markdown --rules L003 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "| Files scanned | 1 |", "markdown_output_reports_zero_warnings")
@@ -140,7 +159,7 @@ local cases = {
     name = "json_columns_use_utf8_character_offsets",
     text = "甲乙的配置會影響結果。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --format json --rules L108 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --format json --rules L108 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "\"lint_id\":\"L108\"", "json_columns_use_utf8_character_offsets")
@@ -152,7 +171,7 @@ local cases = {
     name = "detect_colon_list",
     text = "前言：\n- 項目一\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L003 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L003 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L003]", "detect_colon_list")
@@ -162,7 +181,7 @@ local cases = {
     name = "short_list_blank_line_warns",
     text = "- 項目一\n\n- 項目二\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L004 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L004 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L004]", "short_list_blank_line_warns")
@@ -172,7 +191,7 @@ local cases = {
     name = "long_bibliography_items_allow_spacing",
     text = "- [A01] 這是一條很長很長的 bibliographic list item，後面還跟著一整句補充說明，長度足夠像正式參考書目。\n\n- [B02] 這是另一條同樣很長的 bibliographic list item，也帶有完整說明，用來模擬 reference section 的排版。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L004 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L004 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "long_bibliography_items_allow_spacing")
@@ -183,7 +202,7 @@ local cases = {
     name = "bibliography_reference_entry_structure_warns",
     text = "## References\n\n- [I09] \"Intel 64 and IA-32 Architectures Software Developer's Manuals\" by Intel, 2009. http://example.com/manuals 特別注意 Volume 3A\n  - 網址：http://example.com/manuals 和補充說明\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L055 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L055 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L055]", "bibliography_reference_entry_structure_warns")
@@ -193,7 +212,7 @@ local cases = {
     name = "bibliography_reference_url_corpse_warns",
     text = "## References\n\n- <a id=\"8\">[I09]</a> \"Intel 64 and IA-32 Architectures Software Developer's Manuals\" by Intel, 2009.\n  - http://www.intel.com/products/processor/manuals特別注意Volume3A\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L055 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L055 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L055]", "bibliography_reference_url_corpse_warns")
@@ -203,7 +222,7 @@ local cases = {
     name = "bibliography_initials_spacing_warns",
     text = "## References\n\n- [KE+62] \"One-level Storage System\" by T.Kilburn, D.B.G. Edwards, M.J. Lanigan, F.H. Sumner. IRE Trans. EC-11, 2, 1962.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L056 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L056 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L056]", "bibliography_initials_spacing_warns")
@@ -213,7 +232,7 @@ local cases = {
     name = "bibliography_abbreviation_number_spacing_warns",
     text = "## References\n\n- [LL82] \"Virtual Memory Management in the VAX/VMS Operating System\" by Hank Levy, P. Lipman. IEEE Computer, Vol.15, No.3, pp.45-52, March 1982.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L057 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L057 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L057]", "bibliography_abbreviation_number_spacing_warns")
@@ -223,7 +242,7 @@ local cases = {
     name = "bibliography_year_shorthand_spacing_warns",
     text = "## References\n\n- [G+95] \"Idleness is not sloth\" by Richard Golding, Peter Bosch, Carl Staelin, Tim Sullivan, John Wilkes. USENIX ATC'95, New Orleans, Louisiana.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L058 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L058 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L058]", "bibliography_year_shorthand_spacing_warns")
@@ -233,7 +252,7 @@ local cases = {
     name = "bibliography_possessive_spacing_warns",
     text = "## References\n\n- [I09] \"Intel 64 and IA-32 Architectures Software Developer 's Manuals\" by Intel, 2009.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L059 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L059 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L059]", "bibliography_possessive_spacing_warns")
@@ -243,7 +262,7 @@ local cases = {
     name = "bibliography_curly_quotes_warns",
     text = "## References\n\n- [I09] “Intel 64 and IA-32 Architectures Software Developer’s Manuals” by Intel, 2009.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L060 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L060 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L060]", "bibliography_curly_quotes_warns")
@@ -253,7 +272,7 @@ local cases = {
     name = "bibliography_reference_style_ok",
     text = "## References\n\n- <a id=\"8\">[I09]</a> \"Intel 64 and IA-32 Architectures Software Developer's Manuals\" by Intel, 2009.\n  - http://www.intel.com/products/processor/manuals\n  - 特別注意其中的「Volume 3A: System Programming Guide Part 1」和「Volume 3B: System Programming Guide Part 2」\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L055,L056,L057,L058,L059,L060 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L055,L056,L057,L058,L059,L060 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "bibliography_reference_style_ok")
@@ -269,7 +288,7 @@ local cases = {
     name = "bibliography_explanation_halfwidth_comma_warns",
     text = "## References\n\n- <a id=\"9\">[M15]</a> \"OSSpinLock Is Unsafe\" by J. McCall.\n  - https://mjtsai.com/blog/2015/12/16/osspinlock-is-unsafe\n  - 指出在 macOS 上使用不同優先權的執行緒時, OSSpinLock 可能導致無限忙等，提醒 Mac 使用者謹慎\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L061 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L061 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L061]", "bibliography_explanation_halfwidth_comma_warns")
@@ -279,7 +298,7 @@ local cases = {
     name = "bibliography_explanation_terminal_period_warns",
     text = "## References\n\n- <a id=\"11\">[P81]</a> \"Myths About the Mutual Exclusion Problem\" by G. L. Peterson. Information Processing Letters, 12(3), pages 115-116, 1981.\n  - 此文首次介紹了 Peterson 的演算法.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L061 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L061 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L061]", "bibliography_explanation_terminal_period_warns")
@@ -289,7 +308,7 @@ local cases = {
     name = "bibliography_explanation_chinese_punctuation_ok",
     text = "## References\n\n- <a id=\"9\">[M15]</a> \"OSSpinLock Is Unsafe\" by J. McCall.\n  - https://mjtsai.com/blog/2015/12/16/osspinlock-is-unsafe\n  - 指出在 macOS 上使用不同優先權的執行緒時，OSSpinLock 可能導致無限忙等，提醒 Mac 使用者謹慎\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L061 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L061 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "bibliography_explanation_chinese_punctuation_ok")
@@ -300,7 +319,7 @@ local cases = {
     name = "bibliography_explanation_uses_general_prose_rules",
     text = "## References\n\n- <a id=\"3\">[D68]</a> \"Cooperating sequential processes\" by Edsger W. Dijkstra. 1968.\n  - http://www.cs.utexas.edu/users/EWD/ewd01xx/EWD123.PDF\n  - 這篇經典論文提出 \"原始並行問題\" 與 Dekker 的解法\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L023 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L023 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L023]", "bibliography_explanation_uses_general_prose_rules")
@@ -310,7 +329,7 @@ local cases = {
     name = "formal_citation_key_style_ok",
     text = "正文提到 Solaris 與 Linux 的實作細節 <sup>[[L09]](#7), [[S09]](#14)</sup>。\n\n## References\n\n- <a id=\"7\">[L09]</a> \"glibc 2.9 (include Linux pthreads implementation)\" by Many authors.\n- <a id=\"14\">[S09]</a> \"OpenSolaris Thread Library\" by Sun.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L015,L016 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L015,L016 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "formal_citation_key_style_ok")
@@ -322,7 +341,7 @@ local cases = {
     name = "formal_citation_key_style_missing_reference_section_warns",
     text = "正文提到 Solaris 與 Linux 的實作細節 <sup>[[L09]](#7), [[S09]](#14)</sup>。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L015 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L015 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L015]", "formal_citation_key_style_missing_reference_section_warns")
@@ -332,7 +351,7 @@ local cases = {
     name = "formal_citation_key_style_broken_mapping_warns",
     text = "正文提到 Solaris 與 Linux 的實作細節 <sup>[[L09]](#7), [[S09]](#14)</sup>。\n\n## References\n\n- <a id=\"7\">[L09]</a> \"glibc 2.9 (include Linux pthreads implementation)\" by Many authors.\n- <a id=\"14\">[L81]</a> \"Observations on the Development of an Operating System\" by Hugh Lauer.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L016 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L016 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L016]", "formal_citation_key_style_broken_mapping_warns")
@@ -342,7 +361,7 @@ local cases = {
     name = "formal_citation_uncited_reference_allowed",
     text = "正文提到 Linux 的實作細節 <sup>[[L09]](#7)</sup>。\n\n## References\n\n- <a id=\"7\">[L09]</a> \"glibc 2.9 (include Linux pthreads implementation)\" by Many authors.\n- <a id=\"14\">[S09]</a> \"OpenSolaris Thread Library\" by Sun.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L015,L016 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L015,L016 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "formal_citation_uncited_reference_allowed")
@@ -354,7 +373,7 @@ local cases = {
     name = "frontmatter_ignored_for_l002",
     text = "---\ntitle: 測試\ntag:\n- one\n---\n\n正文。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L002 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L002 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "frontmatter_ignored_for_l002")
@@ -365,7 +384,7 @@ local cases = {
     name = "component_tag_ignored_for_quote_rules",
     text = "<center-panel title=\"執行緒 A（你）\">\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L023,L026 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L023,L026 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "component_tag_ignored_for_quote_rules")
@@ -377,7 +396,7 @@ local cases = {
     name = "image_caption_ignored_for_l026",
     text = "![（Figure 8.1: Layers of the file system.）](image/fslayer.png)\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L026 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L026 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "image_caption_ignored_for_l026")
@@ -388,7 +407,7 @@ local cases = {
     name = "fullwidth_parentheses_allows_english_prose_gloss",
     text = "最低一個 bit（lowest-order bit of the first byte）用來判斷版本。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L026 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L026 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "fullwidth_parentheses_allows_english_prose_gloss")
@@ -399,7 +418,7 @@ local cases = {
     name = "fullwidth_parentheses_warns_on_code_like_ascii",
     text = "Operator（++）needs handling.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L026 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L026 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L026]", "fullwidth_parentheses_warns_on_code_like_ascii")
@@ -409,7 +428,7 @@ local cases = {
     name = "directive_block_ignored_for_l002",
     text = "::: info\n思考題：這是一段內容。\n:::\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L002 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L002 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "directive_block_ignored_for_l002")
@@ -420,7 +439,7 @@ local cases = {
     name = "display_math_ignored_for_l002",
     text = "$$\na < b\n$$\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L002 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L002 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "display_math_ignored_for_l002")
@@ -431,7 +450,7 @@ local cases = {
     name = "top_level_code_fence_requires_surrounding_blank_lines",
     text = "想像一下如果 `>>` 的 bool conversion 不是 explicit 會發生什麼事：\n```cpp\nint main() {}\n```\n那麼這件事會自動發生：\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L036 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L036 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L036]", "top_level_code_fence_requires_surrounding_blank_lines")
@@ -442,7 +461,7 @@ local cases = {
     name = "top_level_code_fence_with_blank_lines_allowed",
     text = "想像一下如果 `>>` 的 bool conversion 不是 explicit 會發生什麼事：\n\n```cpp\nint main() {}\n```\n\n那麼這件事會自動發生：\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L036 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L036 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "top_level_code_fence_with_blank_lines_allowed")
@@ -453,7 +472,7 @@ local cases = {
     name = "indented_list_code_fence_spacing_allowed",
     text = "- 範例：\n  ```cpp\n  int main() {}\n  ```\n  接著說明。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L036 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L036 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "indented_list_code_fence_spacing_allowed")
@@ -464,7 +483,7 @@ local cases = {
     name = "code_fence_adjacent_to_custom_container_boundary_allowed",
     text = ":::tip\n```text\nexample\n```\n:::\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L036 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L036 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "code_fence_adjacent_to_custom_container_boundary_allowed")
@@ -475,7 +494,7 @@ local cases = {
     name = "sentence_punctuation_spacing_warns",
     text = "第一句。第二句？第三句；第四句\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L037]", "sentence_punctuation_spacing_warns")
@@ -486,7 +505,7 @@ local cases = {
     name = "sentence_punctuation_spacing_allows_spaces",
     text = "第一句。 第二句？ 第三句； 第四句\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "sentence_punctuation_spacing_allows_spaces")
@@ -497,7 +516,7 @@ local cases = {
     name = "sentence_punctuation_spacing_allows_attached_chinese_closing_quote",
     text = "他說：「完成。」接著回到主流程\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "sentence_punctuation_spacing_allows_attached_chinese_closing_quote")
@@ -508,7 +527,7 @@ local cases = {
     name = "sentence_punctuation_spacing_allows_closing_quote_at_eol",
     text = "他說：「完成。」\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "sentence_punctuation_spacing_allows_closing_quote_at_eol")
@@ -519,7 +538,7 @@ local cases = {
     name = "sentence_punctuation_spacing_allows_following_fullwidth_comma",
     text = "他問「是否安全？」，這需要另外判斷\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "sentence_punctuation_spacing_allows_following_fullwidth_comma")
@@ -530,7 +549,7 @@ local cases = {
     name = "sentence_punctuation_spacing_checks_list_items",
     text = "- 第一項。第二句\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L037]", "sentence_punctuation_spacing_checks_list_items")
@@ -541,7 +560,7 @@ local cases = {
     name = "sentence_punctuation_spacing_ignores_inline_code",
     text = "這裡的 `foo。bar` 不檢查； 這裡有空格\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "sentence_punctuation_spacing_ignores_inline_code")
@@ -552,7 +571,7 @@ local cases = {
     name = "sentence_punctuation_spacing_ignores_markdown_image",
     text = "![圖說。Source](image/example.png)\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L037 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "sentence_punctuation_spacing_ignores_markdown_image")
@@ -563,7 +582,7 @@ local cases = {
     name = "cjk_latin_spacing_warns",
     text = "這個API呼叫需要修正\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L038]", "cjk_latin_spacing_warns")
@@ -574,7 +593,7 @@ local cases = {
     name = "cjk_latin_spacing_allows_spaces",
     text = "這個 API 呼叫需要修正\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "cjk_latin_spacing_allows_spaces")
@@ -585,7 +604,7 @@ local cases = {
     name = "cjk_latin_spacing_checks_list_items",
     text = "- 這個API 需要修正\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L038]", "cjk_latin_spacing_checks_list_items")
@@ -596,7 +615,7 @@ local cases = {
     name = "cjk_latin_spacing_ignores_inline_code",
     text = "呼叫`API`函式不由這條規則檢查\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "cjk_latin_spacing_ignores_inline_code")
@@ -607,7 +626,7 @@ local cases = {
     name = "cjk_latin_spacing_ignores_codeish_tokens",
     text = "foo_bar變數和 https://example.com文件先不由這條規則檢查\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "cjk_latin_spacing_ignores_codeish_tokens")
@@ -618,7 +637,7 @@ local cases = {
     name = "cjk_latin_spacing_warns_numeric_closed_forms",
     text = "第10篇\n3個項目\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L038]", "cjk_latin_spacing_warns_numeric_closed_forms")
@@ -629,7 +648,7 @@ local cases = {
     name = "cjk_latin_spacing_allows_numeric_spaces",
     text = "第 10 篇\n3 個項目\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L038 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "cjk_latin_spacing_allows_numeric_spaces")
@@ -640,7 +659,7 @@ local cases = {
     name = "markdown_link_spacing_warns_on_chinese_label_followed_by_space",
     text = "雖有[論文](http://example.com) 在進行中\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L040 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L040 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L040]", "markdown_link_spacing_warns_on_chinese_label_followed_by_space")
@@ -651,7 +670,7 @@ local cases = {
     name = "halfwidth_parentheses_ignores_markdown_link_url",
     text = "雖有[論文](http://example.com)在進行中\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L025 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L025 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "halfwidth_parentheses_ignores_markdown_link_url")
@@ -662,7 +681,7 @@ local cases = {
     name = "markdown_link_spacing_allows_mixed_label_before_chinese",
     text = "目前可以在[最新的 draft](https://example.com) 看見該片段\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L040 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L040 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "markdown_link_spacing_allows_mixed_label_before_chinese")
@@ -673,7 +692,7 @@ local cases = {
     name = "markdown_link_spacing_warns_on_english_label_without_spaces",
     text = "可以看[draft](https://example.com)版本\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L040 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L040 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L040]", "markdown_link_spacing_warns_on_english_label_without_spaces")
@@ -684,7 +703,7 @@ local cases = {
     name = "fullwidth_comma_spacing_warns",
     text = "第一句 ，第二句， 第三句\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L041 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L041 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L041]", "fullwidth_comma_spacing_warns")
@@ -695,7 +714,7 @@ local cases = {
     name = "fullwidth_comma_spacing_allows_no_spaces",
     text = "第一句，第二句，第三句\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L041 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L041 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "fullwidth_comma_spacing_allows_no_spaces")
@@ -706,7 +725,7 @@ local cases = {
     name = "markdown_link_tracking_params_warn",
     text = "相關內容詳見 [offsetof](https://en.cppreference.com/w/cpp/types/offsetof?fbclid=abc&utm_source=chatgpt.com#:~:text=offsetof)\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L042 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L042 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L042]", "markdown_link_tracking_params_warn")
@@ -717,7 +736,7 @@ local cases = {
     name = "markdown_link_tracking_params_warns_nested_label",
     text = "延伸閱讀：[[重新理解 C++] Array 和 Pointer 的差異](https://example.com/post?fbclid=abc)\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L042 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L042 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L042]", "markdown_link_tracking_params_warns_nested_label")
@@ -728,7 +747,7 @@ local cases = {
     name = "markdown_link_tracking_params_allows_original_query",
     text = "請看 [search](https://example.com/search?q=offsetof&page=1#result)\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L042 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L042 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "markdown_link_tracking_params_allows_original_query")
@@ -739,7 +758,7 @@ local cases = {
     name = "terminal_continuation_punctuation_warns",
     text = "bit-field 不是我們的重點，所以就不展開敘述了，\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L043 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L043 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L043]", "terminal_continuation_punctuation_warns")
@@ -750,7 +769,7 @@ local cases = {
     name = "terminal_continuation_punctuation_checks_wrapped_quote",
     text = "他說：「這段還沒結束，」\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L043 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L043 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L043]", "terminal_continuation_punctuation_checks_wrapped_quote")
@@ -761,7 +780,7 @@ local cases = {
     name = "terminal_continuation_punctuation_allows_question_and_bracket",
     text = "這樣可以嗎？\n這句以括號結尾（補充）\n請看 [bit-field](https://example.com/bit_field)\n舉例：`1 + 1`、`i * 2`、`i / 3`\n舉例：\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L043 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L043 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "terminal_continuation_punctuation_allows_question_and_bracket")
@@ -772,7 +791,7 @@ local cases = {
     name = "halfwidth_parentheses_english_prose_gloss_warns",
     text = "最低一個 bit(lowest-order bit of the first byte) 用來判斷版本。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L044]", "halfwidth_parentheses_english_prose_gloss_warns")
@@ -783,7 +802,7 @@ local cases = {
     name = "halfwidth_parentheses_version_in_cjk_context_warns",
     text = "在我的環境上 (mingw-gcc 11.2.0) 也是 15。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L044]", "halfwidth_parentheses_version_in_cjk_context_warns")
@@ -794,7 +813,7 @@ local cases = {
     name = "halfwidth_parentheses_allows_function_call_shape",
     text = "這裡呼叫 foo(a, b) 只是示意。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "halfwidth_parentheses_allows_function_call_shape")
@@ -805,7 +824,7 @@ local cases = {
     name = "halfwidth_parentheses_allows_inline_math",
     text = "實際容量為 $(N \\\\cdot B)/2$。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "halfwidth_parentheses_allows_inline_math")
@@ -816,7 +835,7 @@ local cases = {
     name = "halfwidth_parentheses_markdown_link_warns",
     text = "Pablo Halpern 在 PMR 的提案 ([N3916](https://example.com/n3916.pdf)) 中提到：\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L044]", "halfwidth_parentheses_markdown_link_warns")
@@ -827,7 +846,7 @@ local cases = {
     name = "halfwidth_parentheses_allows_standalone_url",
     text = "詳見 (https://example.com/n3916.pdf) 的說明。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "halfwidth_parentheses_allows_standalone_url")
@@ -838,7 +857,7 @@ local cases = {
     name = "halfwidth_parentheses_checks_whole_cjk_paragraph",
     text = "This term (mutex) appears here.\n下一行是中文說明。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L044]", "halfwidth_parentheses_checks_whole_cjk_paragraph")
@@ -849,7 +868,7 @@ local cases = {
     name = "halfwidth_parentheses_allows_all_english_paragraph",
     text = "This term (mutex) appears here.\nAnother English sentence follows.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "halfwidth_parentheses_allows_all_english_paragraph")
@@ -860,7 +879,7 @@ local cases = {
     name = "fullwidth_parentheses_spacing_warns",
     text = "在我的環境上 （mingw-gcc 11.2.0） 也是 15。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L045 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L045 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L045]", "fullwidth_parentheses_spacing_warns")
@@ -871,7 +890,7 @@ local cases = {
     name = "fullwidth_parentheses_spacing_allows_attached",
     text = "在我的環境上（mingw-gcc 11.2.0）也是 15。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L045 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L045 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "fullwidth_parentheses_spacing_allows_attached")
@@ -882,7 +901,7 @@ local cases = {
     name = "fullwidth_parentheses_spacing_allows_sentence_boundary",
     text = "前句。 （補充說明。） 後句\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L045 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L045 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "fullwidth_parentheses_spacing_allows_sentence_boundary")
@@ -893,7 +912,7 @@ local cases = {
     name = "fullwidth_parentheses_spacing_checks_heading",
     text = "### 建構子（Constructor） 與解構子（Destructor）\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L045 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L045 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L045]", "fullwidth_parentheses_spacing_checks_heading")
@@ -904,7 +923,7 @@ local cases = {
     name = "bilingual_term_order_warns_on_english_first",
     text = "mutex（互斥鎖）可以避免競爭。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L046 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L046 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L046]", "bilingual_term_order_warns_on_english_first")
@@ -915,7 +934,7 @@ local cases = {
     name = "bilingual_term_order_allows_chinese_first",
     text = "互斥鎖（mutex）可以避免競爭。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L046 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L046 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "bilingual_term_order_allows_chinese_first")
@@ -926,7 +945,7 @@ local cases = {
     name = "bilingual_term_order_allows_descriptive_parenthetical",
     text = "把內容寫回 counter（位址 `0x8049a1c`）。\nmkfs（讀作 make fs）會建立檔案系統。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L046 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L046 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "bilingual_term_order_allows_descriptive_parenthetical")
@@ -937,7 +956,7 @@ local cases = {
     name = "cjk_internal_space_warns",
     text = "雖然有些 開機載入器會這樣做。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L047 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L047 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L047]", "cjk_internal_space_warns")
@@ -948,7 +967,7 @@ local cases = {
     name = "cjk_internal_space_allows_sentence_spacing",
     text = "第一句。 第二句繼續。\n中文 `code sample` 中文不由這條規則檢查。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L047 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L047 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "cjk_internal_space_allows_sentence_spacing")
@@ -959,7 +978,7 @@ local cases = {
     name = "cjk_internal_space_checks_custom_container_body",
     text = ":::info\n熟悉並善用你的工具 你應該持續學習。\n:::\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L047 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L047 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L047]", "cjk_internal_space_checks_custom_container_body")
@@ -970,7 +989,7 @@ local cases = {
     name = "title_mark_spacing_warns",
     text = "請讀 《作業系統》 這本書。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L048 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L048 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L048]", "title_mark_spacing_warns")
@@ -981,7 +1000,7 @@ local cases = {
     name = "title_mark_spacing_allows_attached_marks",
     text = "請讀《作業系統》與〈第一章〉。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L048 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L048 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "title_mark_spacing_allows_attached_marks")
@@ -992,7 +1011,7 @@ local cases = {
     name = "title_mark_spacing_checks_markdown_link_label_edges",
     text = "請讀[《作業系統》](https://example.com) 這本書。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L048 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L048 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L048]", "title_mark_spacing_checks_markdown_link_label_edges")
@@ -1003,7 +1022,7 @@ local cases = {
     name = "halfwidth_exclamation_in_cjk_prose_warns",
     text = "這真的太棒了!下一題來看看。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L049]", "halfwidth_exclamation_in_cjk_prose_warns")
@@ -1014,7 +1033,7 @@ local cases = {
     name = "halfwidth_question_in_cjk_prose_warns",
     text = "真的嗎?我不太確定。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L049]", "halfwidth_question_in_cjk_prose_warns")
@@ -1025,7 +1044,7 @@ local cases = {
     name = "halfwidth_exclamation_terminal_after_cjk_warns",
     text = "太棒了!\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L049]", "halfwidth_exclamation_terminal_after_cjk_warns")
@@ -1036,7 +1055,7 @@ local cases = {
     name = "halfwidth_exclamation_in_english_prose_ignored",
     text = "That is great!\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "halfwidth_exclamation_in_english_prose_ignored")
@@ -1047,7 +1066,7 @@ local cases = {
     name = "halfwidth_exclamation_inside_inline_code_ignored",
     text = "在 shell 裡用 `echo !` 就可以。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "halfwidth_exclamation_inside_inline_code_ignored")
@@ -1058,7 +1077,7 @@ local cases = {
     name = "fullwidth_exclamation_question_in_cjk_prose_ignored",
     text = "這真的太棒了！下一題來看看。真的嗎？我不太確定。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L049 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "fullwidth_exclamation_question_in_cjk_prose_ignored")
@@ -1069,7 +1088,7 @@ local cases = {
     name = "curly_double_quote_in_cjk_prose_warns",
     text = "作者把它叫做\u{201C}輕量執行緒\u{201D}，很直觀。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L050 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L050 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L050]", "curly_double_quote_in_cjk_prose_warns")
@@ -1080,7 +1099,7 @@ local cases = {
     name = "curly_double_quote_around_english_ignored",
     text = "Paper \u{201C}Thread Scheduling\u{201D} talks about this.\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L050 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L050 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "curly_double_quote_around_english_ignored")
@@ -1091,7 +1110,7 @@ local cases = {
     name = "corner_bracket_in_cjk_prose_ignored",
     text = "作者把它叫做「輕量執行緒」，很直觀。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L050 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L050 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "corner_bracket_in_cjk_prose_ignored")
@@ -1102,7 +1121,7 @@ local cases = {
     name = "fullwidth_quote_spacing_warns",
     text = "或許我們不該關注「誰最先提出？」 這個問題\n計算 「平均」搜尋距離\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L051 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L051 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L051]", "fullwidth_quote_spacing_warns")
@@ -1113,7 +1132,7 @@ local cases = {
     name = "fullwidth_quote_spacing_allows_attached",
     text = "或許我們不該關注「誰最先提出？」這個問題\n計算「平均」搜尋距離\n- 「列點開頭」可保留 marker 後的空格\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L051 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L051 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "fullwidth_quote_spacing_allows_attached")
@@ -1124,7 +1143,7 @@ local cases = {
     name = "internal_consecutive_space_warns",
     text = "而  `poll()` 系統呼叫的行為非常相似\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L052 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L052 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L052]", "internal_consecutive_space_warns")
@@ -1135,7 +1154,7 @@ local cases = {
     name = "internal_consecutive_space_allows_latex_and_leading_indent",
     text = "- 項目：\n  body 可以換行放在下一行\n\n$$\na  b\n=\nc  d\n$$\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L052 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L052 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "internal_consecutive_space_allows_latex_and_leading_indent")
@@ -1146,7 +1165,7 @@ local cases = {
     name = "preferred_taiwan_terms_warns",
     text = "當前 process 的程序會訪問物理地址的 virtual memory，通過 syscall 打開 USB 設備。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L053]", "preferred_taiwan_terms_warns")
@@ -1159,7 +1178,7 @@ local cases = {
     name = "preferred_taiwan_terms_warns_exception_programming",
     text = "這個 try-catch 區塊會把異常重新拋出。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L053]", "preferred_taiwan_terms_warns_exception_programming")
@@ -1170,7 +1189,7 @@ local cases = {
     name = "preferred_taiwan_terms_warns_memory_address",
     text = "這個地址會映射到頁表。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L053]", "preferred_taiwan_terms_warns_memory_address")
@@ -1181,7 +1200,7 @@ local cases = {
     name = "preferred_taiwan_terms_allows_nonit_shebei",
     text = "工地大型設備需要定期保養。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "preferred_taiwan_terms_allows_nonit_shebei")
@@ -1192,7 +1211,7 @@ local cases = {
     name = "preferred_taiwan_terms_allows_nonit_chengxu",
     text = "法律程序必須依既定程序進行。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "preferred_taiwan_terms_allows_nonit_chengxu")
@@ -1203,7 +1222,7 @@ local cases = {
     name = "preferred_taiwan_terms_allows_nonit_yichang",
     text = "這個病人的血壓明顯異常。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "preferred_taiwan_terms_allows_nonit_yichang")
@@ -1214,7 +1233,7 @@ local cases = {
     name = "preferred_taiwan_terms_allows_nonit_dizhi",
     text = "請把收件地址填在表格裡。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "preferred_taiwan_terms_allows_nonit_dizhi")
@@ -1225,7 +1244,7 @@ local cases = {
     name = "preferred_taiwan_terms_allows_contextual_good_usage",
     text = "我們會分配工作，也通過測試。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "preferred_taiwan_terms_allows_contextual_good_usage")
@@ -1236,7 +1255,7 @@ local cases = {
     name = "preferred_taiwan_terms_checks_memory_allocation_and_processor_core",
     text = "記憶體分配器會分配空間，使用 4 個核心。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L053]", "preferred_taiwan_terms_checks_memory_allocation_and_processor_core")
@@ -1248,7 +1267,7 @@ local cases = {
     name = "preferred_taiwan_terms_ignores_inline_code",
     text = "請輸入 `當前程序會訪問地址`。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "preferred_taiwan_terms_ignores_inline_code")
@@ -1259,7 +1278,7 @@ local cases = {
     name = "preferred_taiwan_terms_allows_fixed_terms_with_embedded_needles",
     text = "只有當前置成分真的建立範圍時才前置。\nHandle 譯為控制代碼。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L053 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "preferred_taiwan_terms_allows_fixed_terms_with_embedded_needles")
@@ -1270,7 +1289,7 @@ local cases = {
     name = "custom_container_fence_warns_on_attached_content",
     text = "前文\n::: info更\n\n：內容:::\n後文\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L039 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L039 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L039]", "custom_container_fence_warns_on_attached_content")
@@ -1281,7 +1300,7 @@ local cases = {
     name = "custom_container_fence_allows_arbitrary_label",
     text = "前文\n\n:::callout_beta\n更：內容\n\n另外一段\n:::\n\n後文\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L039 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L039 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "custom_container_fence_allows_arbitrary_label")
@@ -1292,7 +1311,7 @@ local cases = {
     name = "custom_container_fence_warns_on_attached_title_without_space",
     text = ":::warning另外\n內容\n:::\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L039 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L039 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L039]", "custom_container_fence_warns_on_attached_title_without_space")
@@ -1303,7 +1322,7 @@ local cases = {
     name = "custom_container_fence_warns_on_lowercase_label_uppercase_title",
     text = ":::infoCRUX\n內容\n:::\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L039 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L039 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L039]", "custom_container_fence_warns_on_lowercase_label_uppercase_title")
@@ -1314,7 +1333,7 @@ local cases = {
     name = "custom_container_fence_ignores_code_fence",
     text = "```text\n::: info更\n：內容:::\n```\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L039 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L039 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "custom_container_fence_ignores_code_fence")
@@ -1325,7 +1344,7 @@ local cases = {
     name = "dash_rule_warns_in_prose",
     text = "這是一段說明 — 後面接補充。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L028 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L028 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L028]", "dash_rule_warns_in_prose")
@@ -1335,7 +1354,7 @@ local cases = {
     name = "dash_rule_ignores_blockquote_and_table",
     text = "> source — quote\n\n| a | b |\n| - | - |\n| – | 0 |\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L028 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L028 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "dash_rule_ignores_blockquote_and_table")
@@ -1346,7 +1365,7 @@ local cases = {
     name = "extraction_artifact_rule_ignores_markdown_image",
     text = "![](image/figure-01.png)\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L006 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L006 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "extraction_artifact_rule_ignores_markdown_image")
@@ -1357,7 +1376,7 @@ local cases = {
     name = "references_heading_without_citation_apparatus",
     text = "## References\n\n- 一條參考項目\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L015 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L015 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "references_heading_without_citation_apparatus")
@@ -1368,7 +1387,7 @@ local cases = {
     name = "missing_eof_newline_warns",
     text = "這個檔案沒有文末換行",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L014 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L014 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L014]", "missing_eof_newline_warns")
@@ -1378,7 +1397,7 @@ local cases = {
     name = "eof_newline_present_allowed",
     text = "這個檔案有文末換行\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L014 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L014 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "eof_newline_present_allowed")
@@ -1389,7 +1408,7 @@ local cases = {
     name = "paragraph_density_accepts_medium_paragraph",
     text = "這是一段中長技術說明。它會連續講三件事情，但整體還算好讀。最後再補一個例子，讓讀者知道前面的抽象說明要怎麼落回具體情境。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L020 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L020 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "paragraph_density_accepts_medium_paragraph")
@@ -1400,7 +1419,7 @@ local cases = {
     name = "paragraph_density_warns_dense_paragraph",
     text = "這是一段非常長的技術說明；它一口氣塞進背景、限制、例外與權衡；同時又把平台差異、同步保證與錯誤處理全部壓進同一段；接著還補上另一組平台條件、例外流程、測試假設與回退策略；然後再加入更多實作細節、案例比較、邊界行為與成本分析；最後又把抽象規則、局部例外、效能取捨、可移植性限制與維護負擔全部一起收束，讓讀者必須在單一段落裡處理過量資訊，整體密度已經高到非常適合拆段與重排。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L020 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L020 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L020]", "paragraph_density_warns_dense_paragraph")
@@ -1410,7 +1429,7 @@ local cases = {
     name = "single_low_value_semicolon_warns",
     text = "先做 preflight；未過關前不可開始起草。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L021 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L021 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L021]", "single_low_value_semicolon_warns")
@@ -1420,7 +1439,7 @@ local cases = {
     name = "single_low_value_semicolon_in_list_warns",
     text = "- 先做 preflight；未過關前不可開始起草。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L021 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L021 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L021]", "single_low_value_semicolon_in_list_warns")
@@ -1430,7 +1449,7 @@ local cases = {
     name = "single_semicolon_in_long_sentence_allowed",
     text = "這段先交代背景脈絡、限制條件、例外情況與相依關係，讓讀者知道前提在哪裡；接著再補一整段較長的後續說明，描述這些前提如何影響後面的設計與推論，避免把單一分號一律當成壞句子。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L021 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L021 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "single_semicolon_in_long_sentence_allowed")
@@ -1441,7 +1460,7 @@ local cases = {
     name = "parallel_semicolon_enumeration_warns_for_review",
     text = "名字這麼多看起來也許有點意外，但其實是有原因的。`increment` 和 `decrement` 這對名稱描述的是操作本身，也就是把值加一或減一；`signal` 和 `wait` 描述的是它們「常被拿來做什麼」；而 `V` 與 `P` 則是 Dijkstra 當年提出的原始名稱。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L021 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L021 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L021]", "parallel_semicolon_enumeration_warns_for_review")
@@ -1451,7 +1470,7 @@ local cases = {
     name = "multiple_non_parallel_semicolons_warns",
     text = "先做 preflight；未過關前不可開始起草；寫入前還要重新驗證。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L021 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L021 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L021]", "multiple_non_parallel_semicolons_warns")
@@ -1461,7 +1480,7 @@ local cases = {
     name = "inline_enumeration_without_final_conjunction_warns",
     text = "這裡會放每個主題的來源材料、正式輸出、圖片、補充資料、context memory。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L029 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L029 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L029]", "inline_enumeration_without_final_conjunction_warns")
@@ -1471,7 +1490,7 @@ local cases = {
     name = "inline_enumeration_with_final_yu_allowed",
     text = "這裡會放每個主題的來源材料、正式輸出、圖片、補充資料、project-local glossary 與 context memory。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L029 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L029 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "inline_enumeration_with_final_yu_allowed")
@@ -1482,7 +1501,7 @@ local cases = {
     name = "inline_enumeration_with_final_huo_allowed",
     text = "正式輸出不應混入開工前檢查、自檢筆記、對話痕跡、原文區塊、source-side CSS 或純呈現用 HTML wrapper。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L029 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L029 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "inline_enumeration_with_final_huo_allowed")
@@ -1493,7 +1512,7 @@ local cases = {
     name = "json_summary",
     text = "這是 \"中文引號\"\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L023 --format json " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L023 --format json " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "\"warning_count\":1", "json_summary")
@@ -1504,7 +1523,7 @@ local cases = {
     name = "source_text_block_leftover",
     text = "## 原文\n這是一段原文\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L019 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L019 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L019]", "source_text_block_leftover")
@@ -1514,7 +1533,7 @@ local cases = {
     name = "term_form_drift_after_first_bilingual",
     text = "快取（cache）\n緩存（cache）\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L031 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L031 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L031]", "term_form_drift_after_first_bilingual")
@@ -1524,7 +1543,7 @@ local cases = {
     name = "term_form_drift_ignores_clause_like_pair",
     text = "### 作業系統（OS）\n\nBIOS 最終會將作業系統（OS）給啟動。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L031 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L031 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "term_form_drift_ignores_clause_like_pair")
@@ -1535,7 +1554,7 @@ local cases = {
     name = "term_form_drift_ignores_list_separator_prefix",
     text = "提取（Fetch）、解碼（Decode）和執行（Execute）\n- 解碼（Decode）：解析指令。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L031 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L031 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "term_form_drift_ignores_list_separator_prefix")
@@ -1546,7 +1565,7 @@ local cases = {
     name = "bare_english_drift_after_bilingual_anchor",
     text = "排程器（scheduler）會處理佇列。\n後面這裡直接寫 scheduler。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L054]", "bare_english_drift_after_bilingual_anchor")
@@ -1556,7 +1575,7 @@ local cases = {
     name = "bare_english_drift_multiword_after_bilingual_anchor",
     text = "直接證明（Direct Proof）在這裡先定義。\n後面這裡直接寫 Direct Proof。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L054]", "bare_english_drift_multiword_after_bilingual_anchor")
@@ -1566,7 +1585,7 @@ local cases = {
     name = "bare_english_drift_digit_term_after_bilingual_anchor",
     text = "第一層快取（L1 cache）會先命中。\n後面這裡直接寫 L1 cache。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L054]", "bare_english_drift_digit_term_after_bilingual_anchor")
@@ -1576,7 +1595,7 @@ local cases = {
     name = "bare_english_drift_ignores_reintroduced_bilingual_pair",
     text = "排程器（scheduler）會處理佇列。\n後面仍寫排程器（scheduler）。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "bare_english_drift_ignores_reintroduced_bilingual_pair")
@@ -1587,7 +1606,7 @@ local cases = {
     name = "bare_english_drift_ignores_inline_code",
     text = "排程器（scheduler）會處理佇列。\n後面只在 `scheduler` 這段 code 提到。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "bare_english_drift_ignores_inline_code")
@@ -1598,7 +1617,7 @@ local cases = {
     name = "bare_english_drift_ignores_acronym_heavy_anchor",
     text = "單指令多資料（SIMD）會做平行運算。\n後面這裡直接寫 SIMD。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L054 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "bare_english_drift_ignores_acronym_heavy_anchor")
@@ -1609,7 +1628,7 @@ local cases = {
     name = "repeated_bilingual_term_pair_warns",
     text = "快取（cache）\n快取（cache）\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L030 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L030 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L030]", "repeated_bilingual_term_pair_warns")
@@ -1619,7 +1638,7 @@ local cases = {
     name = "repeated_explanatory_parentheses_ignored",
     text = "fundamental type（除了 void）\nfundamental type（除了 void）\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L030 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L030 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "repeated_explanatory_parentheses_ignored")
@@ -1630,7 +1649,7 @@ local cases = {
     name = "bilingual_term_chinese_first_warns",
     text = "### Direct Proof（直接證明）\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L046 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L046 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L046]", "bilingual_term_chinese_first_warns")
@@ -1641,7 +1660,7 @@ local cases = {
     name = "bilingual_term_chinese_first_allows_correct_order",
     text = "### 直接證明（Direct Proof）\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L046 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L046 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "bilingual_term_chinese_first_allows_correct_order")
@@ -1652,7 +1671,7 @@ local cases = {
     name = "unexpanded_workspace_jargon",
     text = "這裡主要處理術語邊界。\n下一段才開始說別的事。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L033 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L033 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L033]", "unexpanded_workspace_jargon")
@@ -1662,7 +1681,7 @@ local cases = {
     name = "unexpanded_workspace_jargon_baseline",
     text = "這裡主要處理 baseline。\n下一段才開始說別的事。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L033 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L033 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L033]", "unexpanded_workspace_jargon_baseline")
@@ -1672,7 +1691,7 @@ local cases = {
     name = "glossary_preferred_form_match",
     text = "快取（cache）\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "glossary_preferred_form_match")
@@ -1683,7 +1702,7 @@ local cases = {
     name = "glossary_preferred_form_match_thread",
     text = "執行緒（thread）\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "glossary_preferred_form_match_thread")
@@ -1694,7 +1713,7 @@ local cases = {
     name = "glossary_preferred_form_mismatch",
     text = "緩存（cache）\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L032]", "glossary_preferred_form_mismatch")
@@ -1705,7 +1724,7 @@ local cases = {
     path = smoke_project_root .. "/_lint_smoke_local_glossary.md",
     text = "信號量（semaphore）\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L032]", "project_local_glossary_override")
@@ -1717,7 +1736,7 @@ local cases = {
     text = "信號量（semaphore）\n",
     command = function()
       return "cd " .. shell_quote(repo_root) ..
-        " && lua5.4 scripts/lint.lua --rules L032 working/_lint_smoke_project/_lint_smoke_local_glossary_relative.md"
+        " && " .. lua_cmd .. " scripts/lint.lua --rules L032 working/_lint_smoke_project/_lint_smoke_local_glossary_relative.md"
     end,
     check = function(output)
       assert_contains(output, "[L032]", "project_local_glossary_override_relative_path")
@@ -1728,7 +1747,7 @@ local cases = {
     path = smoke_project_root .. "/_lint_smoke_scheduler.md",
     text = "做這個決定的是排程器（scheduler）。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "glossary_term_after_copula_prefix")
@@ -1739,7 +1758,7 @@ local cases = {
     name = "glossary_term_after_modal_prefix",
     text = "這個 SBI 呼叫會阻塞（block）。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L032 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "glossary_term_after_modal_prefix")
@@ -1750,7 +1769,7 @@ local cases = {
     name = "term_form_drift_not_triggered_by_explanatory_prefix",
     text = "## 非決定性（Non-determinism）\n\n並行程式通常具有非決定性（non-determinism）。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L031 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L031 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "term_form_drift_not_triggered_by_explanatory_prefix")
@@ -1761,7 +1780,7 @@ local cases = {
     name = "taxonomy_only_summary",
     text = "這段主要整理規則優先序、術語邊界與工作模式，也只是抽象分類、原則與條件的摘要。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L034 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L034 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L034]", "taxonomy_only_summary")
@@ -1771,7 +1790,7 @@ local cases = {
     name = "taxonomy_only_summary_baseline",
     text = "這段主要整理 baseline、分類與條件，整體還停在抽象摘要。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L034 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L034 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L034]", "taxonomy_only_summary_baseline")
@@ -1781,7 +1800,7 @@ local cases = {
     name = "taxonomy_summary_with_anchor",
     text = "這段主要整理規則優先序與術語邊界，會更新 references/output_guide.md 的相關段落，並補一個具體例子。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L034 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L034 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "taxonomy_summary_with_anchor")
@@ -1792,7 +1811,7 @@ local cases = {
     name = "internal_control_label_leaked_into_formal_prose",
     text = "這一輪要先做受影響範圍重驗證，再處理 output contract。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L130 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L130 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L130]", "internal_control_label_leaked_into_formal_prose")
@@ -1802,7 +1821,7 @@ local cases = {
     name = "internal_control_label_rewritten_as_plain_sentence",
     text = "若這一輪會修改既有段落，寫入前先重新檢查這次改動波及的段落，並先確認這次最後要交付的是完整譯文還是 review 報告。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L130 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L130 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "internal_control_label_rewritten_as_plain_sentence")
@@ -1813,7 +1832,7 @@ local cases = {
     name = "huixie_misuse_before_writeout",
     text = "回寫前記得做自檢。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L035 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L035 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L035]", "huixie_misuse_before_writeout")
@@ -1823,7 +1842,7 @@ local cases = {
     name = "huixie_misuse_to_glossary",
     text = "穩定的術語決策應回寫到 project-local glossary。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L035 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L035 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L035]", "huixie_misuse_to_glossary")
@@ -1833,7 +1852,7 @@ local cases = {
     name = "huixie_write_back_term_allowed",
     text = "這個控制器採用回寫快取（write-back caching）。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L035 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L035 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "huixie_write_back_term_allowed")
@@ -1844,7 +1863,7 @@ local cases = {
     name = "long_de_chain_dense_window",
     text = "這個流程的設定的建立的順序很重要。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L008 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L008 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L008]", "long_de_chain_dense_window")
@@ -1854,7 +1873,7 @@ local cases = {
     name = "long_de_chain_not_total_line_count",
     text = "同步的涵義更廣了一些，它描述的是事件之間的關係。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L008 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L008 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "long_de_chain_not_total_line_count")
@@ -1865,7 +1884,7 @@ local cases = {
     name = "paired_conjunction_incomplete",
     text = "雖然這裡列出了風險，後面沒有補對比骨架。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L125]", "paired_conjunction_incomplete")
@@ -1875,7 +1894,7 @@ local cases = {
     name = "paired_conjunction_complete",
     text = "雖然這裡列出了風險，但後面也補了對比骨架。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "paired_conjunction_complete")
@@ -1886,7 +1905,7 @@ local cases = {
     name = "paired_conjunction_causal_clause_allowed",
     text = "由於負載過高，系統回應變慢。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "paired_conjunction_causal_clause_allowed")
@@ -1897,7 +1916,7 @@ local cases = {
     name = "paired_conjunction_causal_clause_with_suoyi_allowed",
     text = "由於負載過高，所以系統回應變慢。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "paired_conjunction_causal_clause_with_suoyi_allowed")
@@ -1908,7 +1927,7 @@ local cases = {
     name = "paired_conjunction_conditional_clause_allowed",
     text = "如果資料量過大，流程會阻塞。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "paired_conjunction_conditional_clause_allowed")
@@ -1919,7 +1938,7 @@ local cases = {
     name = "paired_conjunction_conditional_clause_with_jiu_allowed",
     text = "如果資料量過大，流程就會阻塞。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L125 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "paired_conjunction_conditional_clause_with_jiu_allowed")
@@ -1930,7 +1949,7 @@ local cases = {
     name = "imminent_event_without_sentence_final_le",
     text = "展示快要開始。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L127 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L127 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L127]", "imminent_event_without_sentence_final_le")
@@ -1940,7 +1959,7 @@ local cases = {
     name = "imminent_event_with_sentence_final_le",
     text = "展示快要開始了。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L127 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L127 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "imminent_event_with_sentence_final_le")
@@ -1951,7 +1970,7 @@ local cases = {
     name = "imminent_subordinate_clause",
     text = "展示快要開始時，請先就座。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L127 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L127 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "imminent_subordinate_clause")
@@ -1962,7 +1981,7 @@ local cases = {
     name = "completed_event_negated_with_bu",
     text = "系統不初始化了這個 buffer。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L128 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L128 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L128]", "completed_event_negated_with_bu")
@@ -1972,7 +1991,7 @@ local cases = {
     name = "completed_event_negated_with_mei",
     text = "系統沒有初始化這個 buffer。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L128 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L128 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "completed_event_negated_with_mei")
@@ -1983,7 +2002,7 @@ local cases = {
     name = "plain_bu_change_of_plan",
     text = "系統不更新了。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L128 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L128 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "plain_bu_change_of_plan")
@@ -1994,7 +2013,7 @@ local cases = {
     name = "you_plus_verb_generic_aspect",
     text = "系統有完成初始化。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L120 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L120 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L120]", "you_plus_verb_generic_aspect")
@@ -2004,7 +2023,7 @@ local cases = {
     name = "you_plus_verb_support",
     text = "這個模組有支援快取寫回。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L120 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L120 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L120]", "you_plus_verb_support")
@@ -2014,7 +2033,7 @@ local cases = {
     name = "you_plus_verb_inside_suoyou",
     text = "把所有更新都視為非原子的。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L120 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L120 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "you_plus_verb_inside_suoyou")
@@ -2025,7 +2044,7 @@ local cases = {
     name = "you_possessive_sentence",
     text = "這個 queue 有 retry buffer。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L120 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L120 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "you_possessive_sentence")
@@ -2036,7 +2055,7 @@ local cases = {
     name = "repeated_subject_chain",
     text = "系統會先載入設定，系統再初始化模組。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L009 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L009 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L009]", "repeated_subject_chain")
@@ -2046,7 +2065,7 @@ local cases = {
     name = "repeated_subject_across_sentences",
     text = "程式設計師無法控制排程。程式設計師也無法預測順序。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L009 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L009 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "repeated_subject_across_sentences")
@@ -2057,7 +2076,7 @@ local cases = {
     name = "passive_overuse",
     text = "模組被系統載入後，又被流程重新初始化。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L010 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L010 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L010]", "passive_overuse")
@@ -2067,7 +2086,7 @@ local cases = {
     name = "passive_across_sentences",
     text = "這些操作可能被中斷。這種指令不會被打斷。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L010 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L010 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "passive_across_sentences")
@@ -2078,7 +2097,7 @@ local cases = {
     name = "ba_without_result_state",
     text = "請把設定改。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L011 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L011 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L011]", "ba_without_result_state")
@@ -2088,7 +2107,7 @@ local cases = {
     name = "de_di_de_confusion",
     text = "這個流程跑的很快。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L012 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L012 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L012]", "de_di_de_confusion")
@@ -2098,7 +2117,7 @@ local cases = {
     name = "de_di_de_allows_zhendehen",
     text = "這個手冊真的很難讀。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L012 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L012 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "de_di_de_allows_zhendehen")
@@ -2109,7 +2128,7 @@ local cases = {
     name = "de_di_de_allows_adverbial_di_test",
     text = "這也顯示要可靠地測試 race condition 是很困難的。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L012 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L012 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "de_di_de_allows_adverbial_di_test")
@@ -2120,7 +2139,7 @@ local cases = {
     name = "aspect_le_mismatch",
     text = "這個服務每天啟動了都會先載入設定。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L013]", "aspect_le_mismatch")
@@ -2130,7 +2149,7 @@ local cases = {
     name = "aspect_le_lexical_weile",
     text = "為了方便表達，這種簡化是可以接受的。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "aspect_le_lexical_weile")
@@ -2141,7 +2160,7 @@ local cases = {
     name = "aspect_le_prefix_too_far",
     text = "程式設計師通常需要關心同步約束，這個約束提出了一系列要求。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "aspect_le_prefix_too_far")
@@ -2152,7 +2171,7 @@ local cases = {
     name = "nonspecific_np_fronted_as_topic",
     text = "三個 worker，會在這一輪被建立。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L101 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L101 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L101]", "nonspecific_np_fronted_as_topic")
@@ -2162,7 +2181,7 @@ local cases = {
     name = "temporal_count_phrase_not_topic",
     text = "幾年前，學生提出了更精簡的寫法。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L101 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L101 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "temporal_count_phrase_not_topic")
@@ -2173,7 +2192,7 @@ local cases = {
     name = "self_ziji_ambiguity",
     text = "他告訴她自己已經準備好了。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L102 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L102 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L102]", "self_ziji_ambiguity")
@@ -2183,7 +2202,7 @@ local cases = {
     name = "shi_you_confusion",
     text = "這個問題是有一個穩定解法。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L103 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L103 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L103]", "shi_you_confusion")
@@ -2193,7 +2212,7 @@ local cases = {
     name = "hai_shi_you_not_shi_you_confusion",
     text = "但還是有一些變數會被共享。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L103 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L103 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "hai_shi_you_not_shi_you_confusion")
@@ -2204,7 +2223,7 @@ local cases = {
     name = "de_nominalization_overuse",
     text = "這個流程的設定的建立需要更多時間。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L105 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L105 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L105]", "de_nominalization_overuse")
@@ -2214,7 +2233,7 @@ local cases = {
     name = "de_nominalization_plain_processing_way",
     text = "這樣的處理方式比較溫和。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L105 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L105 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "de_nominalization_plain_processing_way")
@@ -2225,7 +2244,7 @@ local cases = {
     name = "ba_object_lacks_clear_reference",
     text = "把一個暫存檔寫回磁碟。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L106 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L106 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L106]", "ba_object_lacks_clear_reference")
@@ -2235,7 +2254,7 @@ local cases = {
     name = "ba_object_indefinite_only_later_in_clause",
     text = "最後把新值寫回去的操作展示了一個案例。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L106 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L106 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "ba_object_indefinite_only_later_in_clause")
@@ -2246,7 +2265,7 @@ local cases = {
     name = "ba_clause_without_bounded_endpoint",
     text = "把設定改，避免後續錯誤。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L107 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L107 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L107]", "ba_clause_without_bounded_endpoint")
@@ -2256,7 +2275,7 @@ local cases = {
     name = "np_de_vp_overcompression",
     text = "資源配置的決定會影響後續排程。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L108 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L108 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L108]", "np_de_vp_overcompression")
@@ -2266,7 +2285,7 @@ local cases = {
     name = "np_de_vp_not_on_processing_way",
     text = "目錄的實作方式和一般檔案非常類似。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L108 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L108 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "np_de_vp_not_on_processing_way")
@@ -2277,7 +2296,7 @@ local cases = {
     name = "shou_with_bare_event",
     text = "這個模組受到初始化流程影響。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L111 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L111 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L111]", "shou_with_bare_event")
@@ -2287,7 +2306,7 @@ local cases = {
     name = "you_sentence_with_definite_np",
     text = "有這個模組需要額外處理。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L112 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L112 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L112]", "you_sentence_with_definite_np")
@@ -2297,7 +2316,7 @@ local cases = {
     name = "descriptive_v_de_with_overt_object",
     text = "整理得資料很清楚。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L114 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L114 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L114]", "descriptive_v_de_with_overt_object")
@@ -2307,7 +2326,7 @@ local cases = {
     name = "overloaded_postverbal_stack",
     text = "系統整理資料三次完整輸出結果。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L115 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L115 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L115]", "overloaded_postverbal_stack")
@@ -2317,7 +2336,7 @@ local cases = {
     name = "local_pronoun_used_for_reflexive_meaning",
     text = "他修改他的設定檔。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L116 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L116 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L116]", "local_pronoun_used_for_reflexive_meaning")
@@ -2327,7 +2346,7 @@ local cases = {
     name = "ziji_in_bei_clause_dual_antecedent_ambiguity",
     text = "主程式被外掛覆寫了自己的設定檔。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L118 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L118 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L118]", "ziji_in_bei_clause_dual_antecedent_ambiguity")
@@ -2337,7 +2356,7 @@ local cases = {
     name = "nonagentive_subject_with_control_modal",
     text = "系統願意重新載入設定。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L121 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L121 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L121]", "nonagentive_subject_with_control_modal")
@@ -2347,7 +2366,7 @@ local cases = {
     name = "missing_associative_de_after_modifier",
     text = "這是一套複雜控制流程。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L122 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L122 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L122]", "missing_associative_de_after_modifier")
@@ -2357,7 +2376,7 @@ local cases = {
     name = "missing_adverbial_di_after_modifier",
     text = "請清楚說明這個步驟。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L123 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L123 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L123]", "missing_adverbial_di_after_modifier")
@@ -2367,7 +2386,7 @@ local cases = {
     name = "missing_complement_de_after_verb",
     text = "這樣比較看出來差異。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L124 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L124 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L124]", "missing_complement_de_after_verb")
@@ -2377,7 +2396,7 @@ local cases = {
     name = "lexical_kanchulai_allowed",
     text = "這個錯誤很容易看出來。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L124 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L124 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "lexical_kanchulai_allowed")
@@ -2388,7 +2407,7 @@ local cases = {
     name = "count_phrase_after_sentence_final_le",
     text = "服務重試三次請求了。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L129 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L129 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L129]", "count_phrase_after_sentence_final_le")
@@ -2398,7 +2417,7 @@ local cases = {
     name = "count_phrase_before_last_clause_boundary",
     text = "如果是在同一個處理器內部，我們就無法判斷先後順序了。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L129 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L129 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "count_phrase_before_last_clause_boundary")
@@ -2409,7 +2428,7 @@ local cases = {
     name = "ordinal_phrase_before_sentence_final_le",
     text = "第一個問題很簡單，第二個就不簡單了。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L129 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L129 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "ordinal_phrase_before_sentence_final_le")
@@ -2420,7 +2439,7 @@ local cases = {
     name = "aspect_le_preserved_by_state_change_zhongyu",
     text = "這個服務每天終於啟動了都會先載入設定。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "aspect_le_preserved_by_state_change_zhongyu")
@@ -2431,7 +2450,7 @@ local cases = {
     name = "aspect_le_preserved_by_state_change_kaishi",
     text = "程式通常開始重試了幾次之後會放棄。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "aspect_le_preserved_by_state_change_kaishi")
@@ -2442,7 +2461,7 @@ local cases = {
     name = "aspect_le_preserved_by_state_change_biande",
     text = "這個模組一般變得更敏感了一點。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "aspect_le_preserved_by_state_change_biande")
@@ -2453,7 +2472,7 @@ local cases = {
     name = "aspect_le_lexical_suanle",
     text = "通常算了就不再重試。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "aspect_le_lexical_suanle")
@@ -2464,7 +2483,7 @@ local cases = {
     name = "aspect_le_preserved_by_state_change_cai",
     text = "這個服務每天才完成了初始化流程。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "aspect_le_preserved_by_state_change_cai")
@@ -2475,7 +2494,7 @@ local cases = {
     name = "aspect_le_preserved_by_state_change_geng",
     text = "這個模組通常更敏感了一些。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "aspect_le_preserved_by_state_change_geng")
@@ -2486,7 +2505,7 @@ local cases = {
     name = "aspect_le_lexical_dele",
     text = "通常得了重感冒就休息。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L013 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "aspect_le_lexical_dele")
@@ -2497,7 +2516,7 @@ local cases = {
     name = "citation_inline_code_example_not_flagged",
     text = "本規範的 citation 語法為 `<sup>[[2]](#2)</sup>`，放在文末。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L015 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L015 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "citation_inline_code_example_not_flagged")
@@ -2508,7 +2527,7 @@ local cases = {
     name = "citation_code_fence_example_not_flagged",
     text = "```markdown\n<sup>[[1]](#1)</sup>\n```\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L015 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L015 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "citation_code_fence_example_not_flagged")
@@ -2519,7 +2538,7 @@ local cases = {
     name = "citation_missing_reference_section_warns",
     text = "看這裡<sup>[[1]](#1)</sup>。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L015 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L015 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L015]", "citation_missing_reference_section_warns")
@@ -2529,7 +2548,7 @@ local cases = {
     name = "citation_id_display_mismatch_warns",
     text = "看這裡<sup>[[1]](#1)</sup>。\n\n## 引用文獻\n\n- <a id=\"2\">[1]</a>: ref\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L016 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L016 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L016]", "citation_id_display_mismatch_warns")
@@ -2539,7 +2558,7 @@ local cases = {
     name = "citation_duplicate_anchor_warns",
     text = "看這裡<sup>[[1]](#1)</sup>。\n\n## 引用文獻\n\n- <a id=\"1\">[1]</a>: first\n- <a id=\"1\">[1]</a>: duplicate\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L016 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L016 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L016]", "citation_duplicate_anchor_warns")
@@ -2549,7 +2568,7 @@ local cases = {
     name = "citation_well_formed_not_flagged",
     text = "看這裡<sup>[[1]](#1)</sup>。\n\n## 引用文獻\n\n- <a id=\"1\">[1]</a>: ref\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L015,L016 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L015,L016 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "0 warning(s)", "citation_well_formed_not_flagged")
@@ -2561,7 +2580,7 @@ local cases = {
     name = "exclude_removes_rule_from_base",
     text = "## 開工前檢查\n\n測試段落。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --exclude L017 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --exclude L017 " .. shell_quote(path)
     end,
     check = function(output)
       assert_not_contains(output, "[L017]", "exclude_removes_rule_from_base")
@@ -2571,7 +2590,7 @@ local cases = {
     name = "profile_spec_excludes_l017",
     text = "## 開工前檢查\n\n測試段落。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --profile spec " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --profile spec " .. shell_quote(path)
     end,
     check = function(output)
       assert_not_contains(output, "[L017]", "profile_spec_excludes_l017")
@@ -2581,7 +2600,7 @@ local cases = {
     name = "profile_glossary_excludes_l044",
     text = "| 英文 | 臺灣用語 |\n| --- | --- |\n| Address (n.) | 位址 |\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --profile glossary " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --profile glossary " .. shell_quote(path)
     end,
     check = function(output)
       assert_not_contains(output, "[L044]", "profile_glossary_excludes_l044")
@@ -2592,7 +2611,7 @@ local cases = {
     text = "段落。\n",
     expect_failure = true,
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --profile bogus " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --profile bogus " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "unknown profile", "unknown_profile_errors")
@@ -2603,7 +2622,7 @@ local cases = {
     text = "段落。\n",
     expect_failure = true,
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --exclude L9999 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --exclude L9999 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "unknown lint id", "unknown_exclude_id_errors")
@@ -2613,7 +2632,7 @@ local cases = {
     name = "l002_is_lint_hybrid",
     text = "段落。\n",
     command = function(_)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --list-rules"
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --list-rules"
     end,
     check = function(output)
       assert_contains(output, "L002\tlint-hybrid", "l002_is_lint_hybrid")
@@ -2623,7 +2642,7 @@ local cases = {
     name = "l009_ignores_single_char_pronoun",
     text = "它執行了任務，它也回報了結果。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L009 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L009 " .. shell_quote(path)
     end,
     check = function(output)
       assert_not_contains(output, "[L009]", "l009_ignores_single_char_pronoun")
@@ -2633,7 +2652,7 @@ local cases = {
     name = "l044_skips_table_row",
     text = "| 英文 | 臺灣用語 |\n| --- | --- |\n| Address (n.) | 位址 |\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
     end,
     check = function(output)
       assert_not_contains(output, "[L044]", "l044_skips_table_row")
@@ -2643,7 +2662,7 @@ local cases = {
     name = "l045_skips_table_row",
     text = "| 英文 | 臺灣用語 |\n| --- | --- |\n| Address （n.） | 位址 |\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L045 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L045 " .. shell_quote(path)
     end,
     check = function(output)
       assert_not_contains(output, "[L045]", "l045_skips_table_row")
@@ -2653,7 +2672,7 @@ local cases = {
     name = "l044_still_fires_in_prose",
     text = "這個欄位 (optional) 可以留空。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L044 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L044]", "l044_still_fires_in_prose")
@@ -2663,7 +2682,7 @@ local cases = {
     name = "l007_detects_bei_zuzhi_cheng",
     text = "這份文件被組織成三個章節。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L007 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L007 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L007]", "l007_detects_bei_zuzhi_cheng")
@@ -2673,7 +2692,7 @@ local cases = {
     name = "l007_detects_kebei_suo",
     text = "這個欄位可被上游所覆寫。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L007 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L007 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L007]", "l007_detects_kebei_suo")
@@ -2683,7 +2702,7 @@ local cases = {
     name = "l007_detects_wenxianzhong_beitichu",
     text = "這個想法在文獻中被提出。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L007 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L007 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L007]", "l007_detects_wenxianzhong_beitichu")
@@ -2693,7 +2712,7 @@ local cases = {
     name = "l022_covers_heading",
     text = "# 这是标题\n\n正文段落。\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L022 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L022 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L022]", "l022_covers_heading")
@@ -2703,7 +2722,7 @@ local cases = {
     name = "l022_covers_list_item",
     text = "段落。\n\n- 这个条目使用简体字\n",
     command = function(path)
-      return "lua5.4 " .. shell_quote(lint_script) .. " --rules L022 " .. shell_quote(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L022 " .. shell_quote(path)
     end,
     check = function(output)
       assert_contains(output, "[L022]", "l022_covers_list_item")
