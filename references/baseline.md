@@ -241,9 +241,9 @@ Control unit 用來命令 Processor 的操作，主要負責剛剛提到的 Fetc
 
 以前會把記憶體控制器做在北橋裡面，北橋再拉 Bus 到 memory 上，因此 CPU 想要跟 memory 溝通，就需要先到北橋，再到 memory 去。 其中 CPU 到北橋的這段 Bus 有個名字被稱為 Front-side bus（FSB），而記憶體控制器到 memory 的這段 Bus 叫 memory bus：
 
-![（Pentium II/III 時代的典型晶片組版面配置，source：[Wikipedia](https://en.wikipedia.org/wiki/Front-side_bus#/media/File:Motherboard_diagram.svg)）](image/chipset-layout.png)
+![（Pentium II/III 時代的典型晶片組佈局，source：[Wikipedia](https://en.wikipedia.org/wiki/Front-side_bus#/media/File:Motherboard_diagram.svg)）](image/chipset-layout.png)
 
-![（我覺得這張寫得更清楚一點，source：[Anyone know what this part of my motherboard is?](https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2Fanyone-know-what-this-part-of-my-motherboard-is-v0-794wyr5ninvc1.jpeg%3Fwidth%3D498%26format%3Dpjpg%26auto%3Dwebp%26s%3D7dab33952489ae88d70d9369411c91e93845a972)）](image/chipset-layout-2.png)
+![（我覺得這張圖的佈局寫得更清楚一點，source：[Anyone know what this part of my motherboard is?](https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2Fanyone-know-what-this-part-of-my-motherboard-is-v0-794wyr5ninvc1.jpeg%3Fwidth%3D498%26format%3Dpjpg%26auto%3Dwebp%26s%3D7dab33952489ae88d70d9369411c91e93845a972)）](image/chipset-layout-2.png)
 
 ### 現代 intel PCH / AMD FCH
 

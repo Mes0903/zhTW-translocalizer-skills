@@ -2124,7 +2124,6 @@ local PREFERRED_TAIWAN_TERMS = {
   { term = "地址", preferred = "位址", context = "memory_address", note = "限計算機 address 語境；一般住址可保留「地址」" },
   { term = "拷貝", preferred = "複製" },
   { term = "條指令", preferred = "道指令", note = "instruction 的量詞用「道」" },
-  { term = "佈局", preferred = "版面配置", note = "若原文是 layout，建議譯為「版面配置」" },
   { term = "計劃", preferred = "計畫" },
   { term = "型別", preferred = "型態" },
   { term = "通過", preferred = "透過 / 藉由 / 經由", context = "tongguo_via", note = "「通過」保留給 pass，如通過測試" },

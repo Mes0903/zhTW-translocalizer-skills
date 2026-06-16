@@ -123,7 +123,7 @@
 | Kernel | （作業系統）核心 |
 | Kit | 套件 |
 | LAN | LAN、區域網路 |
-| Layout | 版面配置 |
+| Layout | 佈局、版面配置 |
 | Library | 函式庫、程式庫 |
 | Link | 連結、鏈結 |
 | Linked List | 串列 |
