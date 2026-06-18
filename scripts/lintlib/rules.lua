@@ -2549,6 +2549,11 @@ RULES = {
 
       local pair_patterns = {
         { first = "不是", second = "而是" },
+        { first = "不是", second = "其實" },
+        { first = "不是", second = "真正" },
+        { first = "並非", second = "而是" },
+        { first = "並非", second = "其實" },
+        { first = "並非", second = "真正" },
         { first = "所謂", second = "就是" },
         { first = "可被", second = "所" },
       }

@@ -1798,7 +1798,7 @@ local cases = {
   },
   {
     name = "taxonomy_summary_with_anchor",
-    text = "這段主要整理規則優先序與術語邊界，會更新 references/output_guide.md 的相關段落，並補一個具體例子。\n",
+    text = "這段主要整理規則優先序與術語邊界，會更新 references/output_grammar.md 的相關段落，並補一個具體例子。\n",
     command = function(path)
       return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L034 " .. shell_quote(path)
     end,
@@ -2696,6 +2696,16 @@ local cases = {
     end,
     check = function(output)
       assert_contains(output, "[L007]", "l007_detects_kebei_suo")
+    end,
+  },
+  {
+    name = "l007_detects_negative_supplement_qishi",
+    text = "這段說明不是在介紹檔案名稱，其實是在說它控制規則讀取順序。\n",
+    command = function(path)
+      return lua_cmd .. " " .. shell_quote(lint_script) .. " --rules L007 " .. shell_quote(path)
+    end,
+    check = function(output)
+      assert_contains(output, "[L007]", "l007_detects_negative_supplement_qishi")
     end,
   },
   {

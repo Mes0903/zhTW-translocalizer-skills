@@ -27,7 +27,7 @@ Examples:
   scripts/lint.lua --format json working/foo/output.md
   scripts/lint.lua --format markdown working/foo/output.md
   scripts/lint.lua --rules L001,L002,L015 scripts/README.md
-  scripts/lint.lua --profile spec references/output_guide.md
+  scripts/lint.lua --profile spec references/output_grammar.md references/output_style.md
   scripts/lint.lua --exclude L017,L027 scripts/README.md
   scripts/lint.lua --list-rules
 ]])

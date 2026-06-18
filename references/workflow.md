@@ -4,7 +4,7 @@
 
 執行任務時直接遵守本檔：
 
-- 中文輸出規則看 `references/output_guide.md`
+- 中文輸出規則看 `references/output_grammar.md` 與 `references/output_style.md`
 - 術語與臺灣用語偏好看 `references/glossary.md` 與 `references/preferred_taiwan_terms.md`
 - 起草前檢查看 `references/preflight_checklist.md`
 - 本檔中的欄位名、Mode 名與其他 workflow 標籤，只供 agent 在內部判定
@@ -96,11 +96,12 @@
 預設先讀下列規則文件：
 
 1. `references/workflow.md`
-2. `references/output_guide.md`
-3. project-local glossary 的明確映射
-4. `references/glossary.md`
-5. `references/preferred_taiwan_terms.md`
-6. `references/preflight_checklist.md`
+2. `references/output_grammar.md`
+3. `references/output_style.md`
+4. project-local glossary 的明確映射
+5. `references/glossary.md`
+6. `references/preferred_taiwan_terms.md`
+7. `references/preflight_checklist.md`
 
 視任務需要再補讀：
 
@@ -117,8 +118,10 @@
 
 各檔分別負責什麼：
 
-- `references/output_guide.md`
-  - 定義中文輸出規則、Markdown / citation 邊界與最小必要例子
+- `references/output_grammar.md`
+  - 定義術語、句法、虛詞、標點、Markdown、citation、link label 與正式輸出檔污染邊界
+- `references/output_style.md`
+  - 定義忠實度、自然化、語氣、AI 腔、解說具體性、段落節奏與 baseline 的文風角色
 - `references/workflow.md`
   - 定義閱讀路徑、task continuity、驗證關卡與輸入模型
 - `references/glossary.md`
@@ -281,7 +284,7 @@
   - 優先使用 `lua5.4`
   - 若沒有 `lua5.4`，才改用 `lua`
   - 兩者都不存在時，必須先回報，且不可宣稱 linter 已跑完
-- linter 路徑以 skill root 為基準是 `scripts/lint.lua`。 若目前在 repo root，常用完整路徑是 `skills/zhTW-Translocalizer/scripts/lint.lua`
+- linter 路徑以 skill root 為基準是 `scripts/lint.lua`。 若目前不在 skill root，請用 `<skill-root>/scripts/lint.lua` 明確指定
 - 若輸出目標是一般 Markdown 段落或可由 linter 解析的 Markdown 檔，完成前必須至少規劃並執行一次適用的 `scripts/lint.lua`
 - 若 task 會刻意保留 custom CSS、raw HTML、雙語對照區塊或其他特殊結構，必須先決定：
   - 哪些規則仍是 must-review
@@ -316,7 +319,8 @@
 - skill 本身只放工作流程與必讀檔案的入口，不重複規則全文
 - 若輸入中直接明寫各欄位，視為同一組內部欄位的顯式展開，而不是另一套輸入格式
 - skill 啟動後的最小必讀集合應是：
-  - `references/output_guide.md`
+  - `references/output_grammar.md`
+  - `references/output_style.md`
   - `references/workflow.md`
   - `references/glossary.md`
   - `references/preferred_taiwan_terms.md`

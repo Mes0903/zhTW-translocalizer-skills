@@ -5,7 +5,7 @@ description: 用於此 repo 內的臺灣繁體中文翻譯、改寫、修稿、�
 
 # zhTW-Translocalizer
 
-這份 skill 只作為入口與導引，不重複規則正文
+這份 `SKILL.md` 是本 skill 的唯一入口與導引
 
 ## 啟動後立即確認
 
@@ -24,8 +24,8 @@ command -v lua5.4 || command -v lua
 
 ## 安裝 / 配置
 
-- 將此 skill repo 安裝成一個 skill root；在 `hanaya-workspace` 內的預設位置是 `skills/zhTW-Translocalizer/`。若安裝到其他平台，保持 `SKILL.md`、`references/`、`scripts/`、`assets/` 的相對位置不變。
-- 必要 runtime 只有 Lua linter：優先安裝或提供 `lua5.4`，否則可退回 `lua`。不要把 PDF/OCR/Ollama/qwen3.5 安裝視為本 skill 的必要條件；那些屬於 To-markdown / `environment-bootstrap`。
+- 將此目錄安裝成一個 skill root，並保持 `SKILL.md`、`references/`、`scripts/`、`assets/` 的相對位置不變
+- 必要 runtime 只有 Lua linter：優先安裝或提供 `lua5.4`，否則可退回 `lua`
 - 安裝後先跑 linter smoke：
 
 ```bash
@@ -33,21 +33,14 @@ cd <skill-root>
 lua5.4 scripts/lint_smoke.lua
 ```
 
-若目前工作目錄是 workspace root，則使用：
-
-```bash
-lua5.4 skills/zhTW-Translocalizer/scripts/lint_smoke.lua
-```
-
-- 若 workspace 另外提供 `tools/zhtw-mcp`，它可以作為補充檢查工具；先 `source tools/bootstrap/env.sh` 再檢查 `zhtw-mcp`。但 `zhtw-mcp` 不取代本 skill 的 Lua linter gate。
-
 ## 啟動後先讀
 
 1. `references/workflow.md`
-2. `references/output_guide.md`
-3. `references/glossary.md`
-4. `references/preferred_taiwan_terms.md`
-5. `references/preflight_checklist.md`
+2. `references/output_grammar.md`
+3. `references/output_style.md`
+4. `references/glossary.md`
+5. `references/preferred_taiwan_terms.md`
+6. `references/preflight_checklist.md`
 
 ## 視情況補讀
 
@@ -59,7 +52,8 @@ lua5.4 skills/zhTW-Translocalizer/scripts/lint_smoke.lua
 ## 執行原則
 
 - 對外輸入、欄位推導、閱讀路徑、Mode A / Mode B、override gate、reread、lint gate 與寫入前後驗證，一律直接遵守 `references/workflow.md`
-- 中文輸出、Markdown、citation、正式輸出邊界與自然化規則，一律直接遵守 `references/output_guide.md`
+- 中文文法、句法、標點、Markdown、citation 與正式輸出邊界，一律直接遵守 `references/output_grammar.md`
+- 忠實度、自然化、語氣、AI 腔與段落節奏，一律直接遵守 `references/output_style.md`
 - 起草、修稿或改規則前，必須先完成 `references/preflight_checklist.md`
 - 對任何正式 Markdown 輸出檔的新增或修改，完成前必須實際執行 linter，並在回覆中說明使用的命令與結果。 若因 Lua 或路徑問題無法執行，必須明確回報為未完成的驗證缺口
 - 欄位名、模式名與其他 workflow 控制標籤只供內部判定。 若正式輸出需要提到相關概念，改寫成完整句子，不要直接把標籤當成中文術語
