@@ -26,13 +26,8 @@
   - [ ] 原文 + 譯文 / 譯文 + 解釋 / 其他雙層輸出形式
   - [ ] custom CSS / raw HTML / artifact allowance
 - [ ] 整理 linter 要怎麼跑，以及是否有 rule-level 例外
-- [ ] 檢查 Lua runtime：
-  - [ ] `lua5.4` 可用
-  - [ ] 或 `lua` 可用
-  - [ ] 若兩者都不可用，已回報 linter 無法執行，且未宣稱 lint 已跑完
-- [ ] 確認 linter 入口路徑：
-  - [ ] skill root 下的 `scripts/lint.lua`
-  - [ ] 或以 `<skill-root>/scripts/lint.lua` 明確指定
+- [ ] 檢查 `python3` 為 Python 3.10 以上，並確認 linter 可執行
+- [ ] 確認 skill root 下的 `linter/lint.py` 入口。 從其他目錄啟動時使用完整路徑
 - [ ] 判斷這一輪是不是在接續同一個任務，還是使用者已經明確改成另一個任務
 - [ ] 若這仍是同一個任務，沿用既有的 source paths / output / scope / baseline / 交付形式 / action / mode / citation / 已接受例外
 - [ ] 若任務已被明確 rebind，重新跑對應的開工前檢查，不可默默沿用舊 task 狀態
@@ -75,47 +70,17 @@
 - [ ] 若使用者明確指定 must-read file / dir / docs，先把它們放進閱讀計畫，不可被 generic 預設覆蓋
 - [ ] 決定這次真正要沿用的 baseline：
   - [ ] 若使用者明確指定 path 或 path list，讀那些 Markdown baseline
-  - [ ] 若為 `auto`，且這是新任務，讀 `references/baseline.md`
+  - [ ] 若為 `auto`，且這是新任務，使用守則中的相關段落示範
   - [ ] 若為 `auto`，且這不是新任務，讀目前 task 中先前已接受的 Markdown，包括目前 output scope 前面緊鄰的已接受內容，以及同一 task 中明確相關的較早 Markdown
 - [ ] 確認 baseline 只作為文風 / 結構參考與延續性錨點，不覆蓋 source text、glossary 或 citation 決策
 
-若本輪主要在翻譯或重寫 source：
+閱讀要求以 `references/workflow.md` 3.2 為準：
 
-- [ ] 閱讀相關的 `assets/translation-pair`
-- [ ] 閱讀相關的 `assets/native`
-- [ ] 在筆記中分開保存這兩條參考依據軌
-- [ ] 參考依據數量符合目前 mode
-- [ ] Mode A：至少 4 組相關的 `assets/translation-pair`
-- [ ] Mode A：至少 4 篇相關的 `assets/native`
-- [ ] Mode B：至少 2 組相關的 `assets/translation-pair`
-- [ ] Mode B：至少 2 篇相關的 `assets/native`
-- [ ] 若 translation scope 為中到大型，將 `assets/translation-pair` 提高到至少 12 組
-- [ ] 若 translation scope 為中到大型，將 `assets/native` 提高到至少 3 篇
-- [ ] 若 translation scope 為中到大型，起草前已準備批次一致性計畫
-
-若本輪主要在解說 code / repo / workflow：
-
-- [ ] 先閱讀相關的 source code / project docs / README
-- [ ] 若存在可比對的 `assets/native` 風格參考，則閱讀：
-  - [ ] Mode A：至少 2 篇，目標 2-3 篇
-  - [ ] Mode B：至少 1 篇，目標 1-2 篇
-- [ ] 只有在本次 explanation 涉及偏翻譯分析的解說或原文與譯文的措辭決策時，才閱讀 `assets/translation-pair`
-- [ ] 確認沒有把翻譯型閱讀門檻硬套到本 task
-
-若本輪主要在 review / revision 既有文字：
-
-- [ ] 把被 review 的文字本身當成主要依據
-- [ ] 若不是新任務，將目前 task 中先前已接受的 Markdown 視為必讀 baseline
-- [ ] 若有 source text，對忠實度敏感問題先讀 source text
-- [ ] 只有在行文節奏或結構需要比對參考時，才閱讀 `assets/native`
-- [ ] 只有在被 review 的文章是翻譯稿，或正在檢查原文與譯文的術語問題時，才閱讀 `assets/translation-pair`
-- [ ] 確認沒有把翻譯型閱讀門檻硬套到本 task
-
-若本輪主要在調整規則 / linter / prompt / workflow：
-
-- [ ] 先讀使用者明示的問題、benchmark、退化案例與 target-scope docs
-- [ ] 只有在需要驗證具體退化時，才讀 `assets/native` 或 `assets/translation-pair`
-- [ ] 確認翻譯型閱讀門檻不適用於本 task
+- [ ] 依主要工作重點與 mode 完成該節的必讀項目
+- [ ] 翻譯或重寫時，分別保存術語對照與中文文風參考。 中大型 scope 另備批次一致性計畫
+- [ ] 解說程式或 repo 時，已讀相關程式、文件與 README，並完成該節的文風參考要求
+- [ ] review 或 revision 時，已讀目標文字、已接受的 baseline，以及忠實度判斷所需的來源
+- [ ] 調整規則或 linter 時，已讀 benchmark、退化案例、目標文件與目前實作。 具體退化所需的原件與來源依該節補讀
 
 ## 4. 續改既有輸出時，先整理哪些決定已經穩定
 
@@ -162,7 +127,12 @@
 
 ## 7. 自然化與 Markdown 規劃
 
-- [ ] 標記被動句過重或名詞化過重、需要做結構改寫的句子
+文章與段落安排依 [workflow 5.1.1](workflow.md#511-起草前的文章與段落安排)，背景與例子依 [style 4.1 至 4.4](output_style.md#41-文章目的背景與前提)，句法依 grammar 第 2 節。 以下項目用來核對實際安排與適用規則
+
+- [ ] 讀完來源後，已記錄文章問題、各段核心問題與對象、前提、新資訊及下段依賴
+- [ ] 已依段落安排回查適用 grammar，記錄選擇理由與來源位置
+- [ ] 已決定重新閱讀時如何核對句首承接、主線、主詞與動作、收束處重點，以及例子各步的根據
+- [ ] 標記全部被動表述，依 grammar 2.6 逐句核對保留條件。 名詞化過重的句子另標記結構改寫需求
 - [ ] 標記 `preposition + V-ing` 或事件名詞化片語，判斷是否應還原成動詞子句 / 時間框架
 - [ ] 標記 `名詞組 + 的 + 動詞組` 與其他高密度 `的` 字名物化，確認它們是否真的有資訊壓縮價值，而不是把事件硬壓成書面名詞短語
 - [ ] 標記看似術語、其實仍可拆開或擴充的中文組合，確認是否不該硬寫成固定詞
@@ -174,8 +144,8 @@
 - [ ] 標記功能詞是否被硬塞成一般名詞或動詞，特別是數量、體貌、語氣、修飾關係與 clause 邊界標記
 - [ ] 標記沿來源線性順序寫會切錯修飾範圍或成分邊界的句子，必要時先重排
 - [ ] 標記有歧義的修飾範圍或成分邊界，先做替代、省略、移位、問答與協調測試，再決定譯文結構
-- [ ] 標記可能更適合改成主動、無主句或框架先行中文，而不是 `被` 的被動句
-- [ ] 標記 `被` 句是否真的需要受事者前景化。 若不需要，規劃改回主動、無主句或框架先行
+- [ ] 不符合 grammar 2.6 保留條件的被動表述，已規劃改成主動、無主句或框架先行
+- [ ] 保留的被動表述已確認受事是本句要強調或段落持續追蹤的對象，並記錄文章問題或前後文的具體依據
 - [ ] 標記未明說施事者的 `被` 句是否被草稿自行補出做事者。 若是，檢查來源或上下文是否真的提供依據
 - [ ] 標記 `被` 句是否額外製造了受害 / 蒙受語氣。 若來源只是中性事件，不要平白加重成受害式 `被` 句
 - [ ] 標記 `受 / 受到` 是否只是被動句替代詞。 若語義不是真正的承受或受影響，不要硬改成 `受` 句
@@ -226,6 +196,7 @@
 - [ ] 標記採用框架先行順序後會更聚焦的地方
 - [ ] 標記仍依賴 stock contrast / exposition template，而非直接陳述主題的 opening sentence 或 opening paragraph
 - [ ] 標記「否定句 A，再用 `而是 / 其實 / 真正...` 補充 B」的句型。 若 B 才是重點，直接改寫成 B
+- [ ] 已依 style 第 3 節標記為預防自行假設的誤解而追加的澄清、否定、保證或範圍說明，包含附註、獨立句、跨句及跨段內容。 保留時已記錄來源明示的內容或使用者的具體提問，無依據的排除內容已規劃刪除
 - [ ] 若本 task 是 explanation-oriented writing，標記那些只列抽象類別名稱、卻沒說明它們實際做什麼的 layer / folder / rule 摘要
 - [ ] 若本 task 是 explanation-oriented writing，標記那些首次出現卻沒展開解釋的內部 workspace 術語
 - [ ] 若本 task 是 explanation-oriented writing，為每個 major layer 或 subsystem 至少規劃一個具體錨點
@@ -269,7 +240,8 @@
 - [ ] 起草前已決定 `context_memory.md` 的 read / create 計畫
 - [ ] 起草前已理解 LaTeX 保留 / 來源正規化 / 忽略 CSS 的邊界
 - [ ] 已決定 draft 完成後的 linter gate：
-  - [ ] 要跑哪個 `scripts/lint.lua` 命令
+  - [ ] 要跑哪個 `linter/lint.py` 命令
   - [ ] 已決定 profile / `--rules` / `--exclude` 等範圍控制方式
   - [ ] 若本次 action 會刻意保留 CSS、raw HTML、雙語對照區塊或 artifact 結構，已決定哪些 lint rule 要停用、縮限或只當 advisory warning
+  - [ ] 診斷依 workflow 5.2 記錄修正、附理由保留或待確認，修改後讀取最新文字並重驗相鄰銜接
   - [ ] 完成回覆會交代 linter 命令與結果

@@ -1,0 +1,1039 @@
+{
+  "schema_version": 1,
+  "lexicons": {
+    "ABSTRACT_EVENT_NOUNS": {
+      "values": [
+        "取回",
+        "決定",
+        "建立",
+        "處理",
+        "比較",
+        "分析",
+        "配置",
+        "實作",
+        "導入",
+        "評估",
+        "部署",
+        "整理"
+      ]
+    },
+    "ABSTRACT_TAXONOMY_TERMS": {
+      "values": [
+        "參考依據",
+        "規則優先序",
+        "術語邊界",
+        "工作模式",
+        "baseline",
+        "continuity",
+        "output contract",
+        "override gate",
+        "task-local artifact",
+        "受影響範圍重驗證",
+        "分類",
+        "原則",
+        "邊界",
+        "層",
+        "策略",
+        "決策",
+        "風險",
+        "訊號",
+        "條件",
+        "形式",
+        "功能",
+        "語義",
+        "對應"
+      ]
+    },
+    "BARE_BA_VERBS": {
+      "values": [
+        "改",
+        "寫",
+        "做",
+        "放",
+        "設",
+        "打",
+        "處理",
+        "整理",
+        "拆",
+        "清"
+      ]
+    },
+    "BA_RESULT_MARKERS": {
+      "values": [
+        "了",
+        "成",
+        "到",
+        "掉",
+        "完",
+        "好",
+        "清",
+        "住",
+        "開",
+        "上",
+        "下",
+        "起來",
+        "下來",
+        "回",
+        "進",
+        "出",
+        "拆成",
+        "寫回",
+        "視為"
+      ]
+    },
+    "BIBLIOGRAPHY_URL_LEADS": {
+      "values": [
+        "Available online at:",
+        "Available online here:",
+        "Available online from:",
+        "Available online:",
+        "Available from:",
+        "Available here:",
+        "Available:",
+        "From:",
+        "網址：",
+        "網址:",
+        "原網址：",
+        "原網址:"
+      ]
+    },
+    "CLAUSE_BOUNDARIES": {
+      "values": [
+        "，",
+        "。",
+        "！",
+        "？",
+        "；",
+        ",",
+        ";",
+        "!",
+        "?",
+        "\n"
+      ]
+    },
+    "COMPLETION_EVENT_VERBS": {
+      "values": [
+        "初始化",
+        "完成",
+        "更新",
+        "載入",
+        "儲存",
+        "建立",
+        "啟動",
+        "安裝",
+        "部署",
+        "提交",
+        "生成",
+        "產生",
+        "解析",
+        "設定",
+        "配置",
+        "連接",
+        "連線",
+        "寫入",
+        "刪除",
+        "修正"
+      ]
+    },
+    "CONTROL_MODALS": {
+      "values": [
+        "敢",
+        "肯",
+        "願意"
+      ]
+    },
+    "COUNT_CLASSIFIERS": {
+      "values": [
+        "個",
+        "次",
+        "種",
+        "段",
+        "項",
+        "行",
+        "條",
+        "本",
+        "份",
+        "篇",
+        "位",
+        "張",
+        "台",
+        "組",
+        "輪",
+        "筆",
+        "門",
+        "層",
+        "類",
+        "天",
+        "月",
+        "年",
+        "分鐘",
+        "小時",
+        "頁"
+      ]
+    },
+    "COUNT_PREFIXES": {
+      "values": [
+        "一",
+        "二",
+        "三",
+        "四",
+        "五",
+        "六",
+        "七",
+        "八",
+        "九",
+        "十",
+        "兩",
+        "幾",
+        "數",
+        "多",
+        "半"
+      ]
+    },
+    "DEFINITE_MARKERS": {
+      "values": [
+        "這",
+        "那",
+        "該",
+        "此",
+        "本",
+        "這個",
+        "那個",
+        "這些",
+        "那些",
+        "這份",
+        "那份",
+        "該欄位",
+        "此模組"
+      ]
+    },
+    "DEGREE_MARKERS": {
+      "values": [
+        "很",
+        "更",
+        "非常",
+        "十分",
+        "太"
+      ]
+    },
+    "DESCRIPTION_OBJECTS": {
+      "values": [
+        "資料",
+        "結果",
+        "內容",
+        "文章",
+        "設定",
+        "buffer",
+        "欄位",
+        "流程"
+      ]
+    },
+    "DESCRIPTIVE_PARENTHETICAL_PREFIXES": {
+      "values": [
+        "位址",
+        "讀作",
+        "例如",
+        "因為",
+        "如果",
+        "是否",
+        "即",
+        "甚至",
+        "包含",
+        "針對",
+        "免費",
+        "用來",
+        "參見",
+        "見",
+        "也就是",
+        "也稱為",
+        "稱作",
+        "圖中",
+        "十六進位",
+        "查詢",
+        "從",
+        "寫入",
+        "讀取",
+        "將",
+        "讓",
+        "確保",
+        "記錄",
+        "釋放",
+        "呼叫",
+        "喚醒",
+        "設置",
+        "跳過",
+        "回傳"
+      ]
+    },
+    "DURATION_OR_COUNT_MARKERS": {
+      "values": [
+        "一次",
+        "兩次",
+        "三次",
+        "很多次",
+        "好幾次",
+        "一輪",
+        "兩輪",
+        "三輪",
+        "很久",
+        "一段時間",
+        "多年",
+        "很長時間"
+      ]
+    },
+    "EVENT_NOMINALIZATION_TAIL_MARKERS": {
+      "values": [
+        "會",
+        "能",
+        "可以",
+        "可",
+        "將",
+        "應",
+        "需",
+        "必須",
+        "影響",
+        "造成",
+        "導致",
+        "帶來",
+        "代表",
+        "意味著",
+        "取決於",
+        "需要",
+        "要求",
+        "值得",
+        "有助於",
+        "變得"
+      ]
+    },
+    "EXCEPTION_PROGRAMMING_CONTEXT": {
+      "values": [
+        "exception",
+        "throw",
+        "catch",
+        "raise",
+        "rethrow",
+        "try",
+        "finally",
+        "handler",
+        "unhandled",
+        "stack trace",
+        "stacktrace",
+        "backtrace",
+        "例外",
+        "拋出",
+        "捕捉",
+        "錯誤處理",
+        "錯誤碼",
+        "try-catch",
+        "try/catch"
+      ]
+    },
+    "FULLWIDTH_QUOTE_CLOSERS": {
+      "values": {
+        "」": true,
+        "』": true
+      }
+    },
+    "FULLWIDTH_QUOTE_OPENERS": {
+      "values": {
+        "「": true,
+        "『": true
+      }
+    },
+    "GENERIC_YOU_VERBS": {
+      "values": [
+        "完成",
+        "支援",
+        "初始化",
+        "更新",
+        "載入",
+        "處理",
+        "建立",
+        "啟動",
+        "整理",
+        "修正",
+        "部署",
+        "提交",
+        "測試",
+        "做",
+        "跑"
+      ]
+    },
+    "GLOSSARY_PREFIX_FALLBACK_MARKERS": {
+      "values": [
+        "也就是",
+        "就是",
+        "則是",
+        "叫做",
+        "稱作",
+        "稱為",
+        "是",
+        "為",
+        "會",
+        "能",
+        "可以",
+        "可",
+        "將",
+        "應",
+        "需",
+        "必須"
+      ]
+    },
+    "HARDWARE_DEVICE_CONTEXT": {
+      "values": [
+        "驅動",
+        "driver",
+        "中斷",
+        "interrupt",
+        "匯流排",
+        "bus",
+        "PCI",
+        "USB",
+        "GPIO",
+        "DMA",
+        "MMIO",
+        "IRQ",
+        "控制器",
+        "controller",
+        "firmware",
+        "韌體",
+        "周邊",
+        "外接",
+        "介面卡",
+        "網卡",
+        "網路卡",
+        "顯示卡",
+        "硬碟",
+        "SSD",
+        "NVMe",
+        "暫存器",
+        "register"
+      ]
+    },
+    "HIGH_RISK_MISSING_COMPLEMENT_DE": {
+      "values": [
+        "比較看出來",
+        "整理很清楚",
+        "寫很完整",
+        "說很清楚",
+        "講很明白"
+      ]
+    },
+    "HIGH_RISK_MISSING_DE_PHRASES": {
+      "values": [
+        "一種常見方法",
+        "複雜控制流程",
+        "跨 lane predicate 測試"
+      ]
+    },
+    "HIGH_RISK_MISSING_DI_PHRASES": {
+      "values": [
+        "有系統整理",
+        "清楚說明",
+        "系統性比較"
+      ]
+    },
+    "HUIXIE_TERM_PREFIXES": {
+      "values": [
+        "快取",
+        "cache"
+      ]
+    },
+    "HUIXIE_TERM_SUFFIXES": {
+      "values": [
+        "快取",
+        "策略",
+        "機制",
+        "模式",
+        "技術",
+        "caching",
+        "cache"
+      ]
+    },
+    "INTERNAL_CONTROL_LABELS": {
+      "values": [
+        "參考依據",
+        "規則優先序",
+        "術語邊界",
+        "工作模式",
+        "開工前檢查關卡",
+        "受影響範圍重驗證",
+        "內部語義欄位",
+        "內部欄位"
+      ]
+    },
+    "INTERNAL_CONTROL_LABELS_CASE_INSENSITIVE": {
+      "values": [
+        "baseline",
+        "continuity",
+        "output contract",
+        "override gate",
+        "task-local artifact",
+        "optional override",
+        "optional overrides"
+      ]
+    },
+    "IT_CONTEXT_TERMS": {
+      "values": [
+        "系統",
+        "程式",
+        "程式碼",
+        "軟體",
+        "硬體",
+        "資料",
+        "資料庫",
+        "記憶體",
+        "位址",
+        "檔案",
+        "目錄",
+        "網路",
+        "封包",
+        "函式",
+        "方法",
+        "類別",
+        "物件",
+        "執行",
+        "流程",
+        "架構",
+        "介面",
+        "模組",
+        "用戶端",
+        "伺服器",
+        "作業系統",
+        "行程",
+        "執行緒",
+        "api",
+        "cpu",
+        "gpu"
+      ]
+    },
+    "MEMORY_ADDRESS_CONTEXT": {
+      "values": [
+        "memory",
+        "pointer",
+        "offset",
+        "virtual",
+        "physical",
+        "MMU",
+        "TLB",
+        "page table",
+        "segment",
+        "記憶體",
+        "指標",
+        "偏移",
+        "虛擬",
+        "實體",
+        "映射",
+        "位址空間",
+        "頁表",
+        "分頁",
+        "段頁式",
+        "address space"
+      ]
+    },
+    "MEMORY_ALLOCATION_CONTEXT": {
+      "values": [
+        "記憶體",
+        "虛擬記憶",
+        "主記憶",
+        "位址空間",
+        "位元組",
+        "頁框",
+        "頁面",
+        "堆積",
+        "heap",
+        "malloc",
+        "alloc",
+        "allocation",
+        "allocator",
+        "分配器",
+        "空間",
+        "buffer",
+        "緩衝區",
+        "區塊"
+      ]
+    },
+    "NONAGENTIVE_SUBJECTS": {
+      "values": [
+        "系統",
+        "模組",
+        "欄位",
+        "流程",
+        "錯誤",
+        "程式",
+        "服務",
+        "設定",
+        "文章",
+        "專案",
+        "資料",
+        "快取",
+        "buffer",
+        "單元",
+        "欄位",
+        "結果"
+      ]
+    },
+    "OVERLOADED_POSTVERBAL_VERBS": {
+      "values": [
+        "整理",
+        "寫",
+        "處理",
+        "比較",
+        "分析",
+        "部署",
+        "跑",
+        "做",
+        "說"
+      ]
+    },
+    "PREFERRED_TAIWAN_TERMS": {
+      "values": [
+        {
+          "note": "parameter 譯為「參數」；argument 譯為「引數」，兩者不可混用",
+          "preferred": "參數列",
+          "term": "參數列表"
+        },
+        {
+          "note": "argument 譯為「引數」；parameter 譯為「參數」，兩者不可混用",
+          "preferred": "引數列",
+          "term": "引數列表"
+        },
+        {
+          "preferred": "實體位址",
+          "term": "物理位址"
+        },
+        {
+          "preferred": "實體位址",
+          "term": "物理地址"
+        },
+        {
+          "preferred": "命令列",
+          "term": "命令行"
+        },
+        {
+          "note": "parallelism 應譯為「平行」；concurrency 才譯為「並行」",
+          "preferred": "平行度",
+          "term": "並行度"
+        },
+        {
+          "note": "multicore / multi-core 譯為「多核」，以和 multi-kernel 的「多核心」區分",
+          "preferred": "多核",
+          "term": "多核心"
+        },
+        {
+          "context": "processor_core_count",
+          "note": "量詞 + 核心在 CPU 語境指 processor core",
+          "preferred": "個處理器核",
+          "term": "個核心"
+        },
+        {
+          "preferred": "原始程式碼",
+          "term": "原始碼"
+        },
+        {
+          "preferred": "自訂",
+          "term": "自定義"
+        },
+        {
+          "preferred": "用戶端",
+          "term": "客戶端"
+        },
+        {
+          "preferred": "閒置",
+          "term": "空閒"
+        },
+        {
+          "preferred": "目前",
+          "term": "當前"
+        },
+        {
+          "context": "memory_allocation",
+          "note": "僅限記憶體配置語境；「分配工作」是正確用法",
+          "preferred": "配置",
+          "term": "分配"
+        },
+        {
+          "context": "hardware_device",
+          "note": "硬體語境建議用「裝置」；大型設施仍可用「設備」",
+          "preferred": "裝置",
+          "term": "設備"
+        },
+        {
+          "context": "process_programming",
+          "note": "若原文是 process，應譯為「行程」；program 應譯為「程式」",
+          "preferred": "行程",
+          "term": "程序"
+        },
+        {
+          "context": "exception_programming",
+          "note": "若原文是 exception，應譯為「例外」",
+          "preferred": "例外",
+          "term": "異常"
+        },
+        {
+          "preferred": "實作",
+          "term": "實現"
+        },
+        {
+          "preferred": "執行",
+          "term": "運行"
+        },
+        {
+          "context": "memory_address",
+          "note": "限計算機 address 語境；一般住址可保留「地址」",
+          "preferred": "位址",
+          "term": "地址"
+        },
+        {
+          "preferred": "複製",
+          "term": "拷貝"
+        },
+        {
+          "note": "instruction 的量詞用「道」",
+          "preferred": "道指令",
+          "term": "條指令"
+        },
+        {
+          "preferred": "計畫",
+          "term": "計劃"
+        },
+        {
+          "preferred": "型態",
+          "term": "型別"
+        },
+        {
+          "context": "tongguo_via",
+          "note": "「通過」保留給 pass，如通過測試",
+          "preferred": "透過 / 藉由 / 經由",
+          "term": "通過"
+        },
+        {
+          "preferred": "傳送",
+          "term": "發送"
+        },
+        {
+          "preferred": "轉寄",
+          "term": "轉發"
+        },
+        {
+          "preferred": "虛擬碼",
+          "term": "偽碼"
+        },
+        {
+          "preferred": "虛擬碼",
+          "term": "僞碼"
+        },
+        {
+          "preferred": "建構",
+          "term": "構建"
+        },
+        {
+          "preferred": "代表 / 表示",
+          "term": "意味著"
+        },
+        {
+          "preferred": "佇列",
+          "term": "隊列"
+        },
+        {
+          "preferred": "最佳化",
+          "term": "優化"
+        },
+        {
+          "preferred": "臨界值",
+          "term": "閥值"
+        },
+        {
+          "preferred": "走訪",
+          "term": "遍歷"
+        },
+        {
+          "preferred": "存取",
+          "term": "訪問"
+        },
+        {
+          "preferred": "核心",
+          "term": "內核"
+        },
+        {
+          "context": "it",
+          "note": "限 IT 語境；電影 / 戲劇 scene 可譯為「場景」",
+          "preferred": "情境",
+          "term": "場景"
+        },
+        {
+          "preferred": "引入",
+          "term": "導入"
+        },
+        {
+          "preferred": "開啟",
+          "term": "打開"
+        },
+        {
+          "preferred": "程式碼",
+          "term": "代碼"
+        },
+        {
+          "preferred": "網路卡",
+          "term": "網卡"
+        }
+      ]
+    },
+    "PROCESSOR_CORE_COUNT_PREFIXES": {
+      "values": [
+        "一",
+        "二",
+        "三",
+        "四",
+        "五",
+        "六",
+        "七",
+        "八",
+        "九",
+        "十",
+        "兩",
+        "幾",
+        "數",
+        "多",
+        "每",
+        "各"
+      ]
+    },
+    "PROCESS_PROGRAMMING_CONTEXT": {
+      "values": [
+        "process",
+        "thread",
+        "scheduler",
+        "scheduling",
+        "fork",
+        "exec",
+        "waitpid",
+        "signal",
+        "syscall",
+        "daemon",
+        "kernel",
+        "userspace",
+        "user-space",
+        "執行緒",
+        "排程",
+        "作業系統",
+        "行程",
+        "核心態",
+        "使用者態",
+        "context switch",
+        "PID",
+        "TID"
+      ]
+    },
+    "REPEATED_SUBJECT_HEADS": {
+      "values": [
+        "系統",
+        "模組",
+        "服務",
+        "程式",
+        "流程",
+        "這個",
+        "該",
+        "此",
+        "我們",
+        "文章",
+        "欄位",
+        "設定",
+        "資料"
+      ]
+    },
+    "SENTENCE_SPACING_CLOSERS": {
+      "values": {
+        "\"": true,
+        "'": true,
+        ")": true,
+        "]": true,
+        "〉": true,
+        "》": true,
+        "」": true,
+        "』": true,
+        "】": true,
+        "）": true
+      }
+    },
+    "SENTENCE_SPACING_FOLLOWING_PUNCTUATION": {
+      "values": {
+        "、": true,
+        "。": true,
+        "！": true,
+        "，": true,
+        "：": true,
+        "；": true,
+        "？": true
+      }
+    },
+    "SENTENCE_SPACING_PUNCTUATION": {
+      "values": {
+        "。": true,
+        "；": true,
+        "？": true
+      }
+    },
+    "SHOU_BARE_EVENT_VERBS": {
+      "values": [
+        "初始化",
+        "更新",
+        "覆寫",
+        "覆蓋",
+        "刪除",
+        "修改",
+        "部署",
+        "重寫",
+        "拆開",
+        "清掉"
+      ]
+    },
+    "SIMPLIFIED_ONLY_CHARACTERS": {
+      "values": [
+        "与",
+        "为",
+        "术",
+        "体",
+        "处",
+        "发",
+        "这",
+        "来",
+        "说",
+        "对",
+        "会",
+        "开",
+        "关",
+        "实",
+        "现",
+        "统",
+        "计",
+        "习",
+        "问",
+        "题",
+        "变",
+        "则",
+        "应",
+        "当",
+        "从",
+        "无",
+        "让",
+        "经",
+        "过",
+        "还",
+        "线",
+        "气",
+        "义",
+        "单",
+        "书",
+        "写",
+        "标",
+        "类",
+        "没",
+        "吗",
+        "门",
+        "电",
+        "数",
+        "样",
+        "别",
+        "观",
+        "图",
+        "两",
+        "产"
+      ]
+    },
+    "TERMINAL_CONTINUATION_PUNCTUATION": {
+      "values": {
+        ",": true,
+        ";": true,
+        "、": true,
+        "，": true,
+        "；": true
+      }
+    },
+    "TERMINAL_PUNCTUATION_CLOSERS": {
+      "values": {
+        ")": true,
+        "]": true,
+        "’": true,
+        "”": true,
+        "〉": true,
+        "》": true,
+        "」": true,
+        "』": true,
+        "】": true,
+        "）": true
+      }
+    },
+    "TITLE_MARK_CLOSERS": {
+      "values": {
+        "〉": true,
+        "》": true
+      }
+    },
+    "TITLE_MARK_OPENERS": {
+      "values": {
+        "〈": true,
+        "《": true
+      }
+    },
+    "TONGGUO_PASS_OBJECTS": {
+      "values": [
+        "測試",
+        "了測試",
+        "所有測試",
+        "全部測試",
+        "這個測試",
+        "該測試",
+        "考試",
+        "了考試",
+        "檢查",
+        "了檢查",
+        "驗證",
+        "了驗證",
+        "審查",
+        "審核",
+        "門檻",
+        "條件",
+        "要求",
+        "關卡",
+        "法案",
+        "決議",
+        "review",
+        "Review"
+      ]
+    },
+    "TRACKING_QUERY_PARAMS": {
+      "values": {
+        "biz_id": true,
+        "dclid": true,
+        "fbclid": true,
+        "gbraid": true,
+        "gclid": true,
+        "igshid": true,
+        "mc_cid": true,
+        "mc_eid": true,
+        "msclkid": true,
+        "ops_request_misc": true,
+        "request_id": true,
+        "spm": true,
+        "wbraid": true,
+        "yclid": true
+      }
+    },
+    "WORKSPACE_JARGON": {
+      "values": [
+        "參考依據",
+        "規則優先序",
+        "術語邊界",
+        "工作模式",
+        "開工前檢查關卡",
+        "baseline",
+        "continuity",
+        "output contract",
+        "override gate",
+        "task-local artifact",
+        "受影響範圍重驗證"
+      ]
+    }
+  }
+}

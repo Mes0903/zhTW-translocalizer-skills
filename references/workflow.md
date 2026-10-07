@@ -5,7 +5,7 @@
 執行任務時直接遵守本檔：
 
 - 中文輸出規則看 `references/output_grammar.md` 與 `references/output_style.md`
-- 術語與臺灣用語偏好看 `references/glossary.md` 與 `references/preferred_taiwan_terms.md`
+- 術語對照看 `references/glossary.md`，禁用詞及臺灣用語偏好看 `references/preferred_taiwan_terms.md`
 - 起草前檢查看 `references/preflight_checklist.md`
 - 本檔中的欄位名、Mode 名與其他 workflow 標籤，只供 agent 在內部判定
 - 若正式輸出需要提到這些概念，改寫成完整句子，不要直接把標籤當成中文術語
@@ -71,7 +71,7 @@
 - `output_file` 不存在或為空時，走 Mode A
 - `output_file` 存在且非空時，走 Mode B
 - 若 `baseline = auto`：
-  - 新任務預設使用 `references/baseline.md`
+  - 新任務使用相關守則中的段落示範
   - 非新任務預設使用目前 task 中先前已接受的 Markdown
 - 若使用者未顯式提供欄位，但 `action`、active file、目前工作目錄或既有 task state 已足以推導，則可直接推導，不必為了表單完整性而中斷
 - 若欄位推導存在實質歧義，且不同解讀會改變讀寫邊界，才需要回頭確認
@@ -105,8 +105,7 @@
 
 視任務需要再補讀：
 
-- `assets/translation-pair`
-- `assets/native`
+- 使用者指定的外部文風參考或原文／譯文對照
 - source code / project docs / README
 - task-local `context_memory.md`
 
@@ -127,11 +126,11 @@
 - `references/glossary.md`
   - 定義全域預設術語映射
 - `references/preferred_taiwan_terms.md`
-  - 定義 workspace 層級的臺灣用語偏好與高風險詞
+  - 定義 workspace 層級的中文禁用詞、臺灣用語偏好與高風險詞
 - `references/preflight_checklist.md`
   - 定義起草前檢查表，不重複定義規則正文
-- `references/baseline.md` 與其他 baseline 材料
-  - 只提供補充性示例與風格錨點，不單獨定義工作流程
+- 守則內的段落示範與使用者指定的文風材料
+  - 提供具體選擇及延續性參考，閱讀用途依 3.3
 
 不要把任務暫存筆記誤當成全域規則：
 
@@ -141,30 +140,25 @@
 
 ### 3.2 依工作重點選擇閱讀材料
 
-先判定本輪主要工作重點，再決定閱讀路徑：
+依任務讀取來源與相關守則示範：
 
 - 翻譯或重寫 source
-  - 必讀相關 source
-  - 必讀相關 `assets/translation-pair`
-  - 必讀相關 `assets/native`
-  - Mode A 至少讀 4 組 translation-pair、4 篇 native
-  - Mode B 至少讀 2 組 translation-pair、2 篇 native
-  - 中大型翻譯 scope，尤其是 5-10 頁，起草前先準備批次一致性計畫
-  - 中大型翻譯 scope 的最低門檻提高到至少 5 組 translation-pair、5 篇 native
+  - 讀取本輪來源及理解它所需的相鄰內容
+  - 依 source 的實際難點回查 grammar，以及 style 4.1 至 4.4 的判準與段落示範
+  - 使用者指定原文／譯文對照或文風參考時，按指定範圍讀取
+  - 中大型翻譯 scope，尤其是 5-10 頁，起草前準備批次一致性計畫
 - code report / repo guide / workflow explanation
-  - 必讀 source code / project docs / README
-  - 至少讀 4 篇 native 作為輸出文風的參考
-  - `assets/translation-pair` 只在真的需要原文與譯文措辭對照時使用
+  - 讀取相關程式、project docs 與 README，以檔案、責任與行為支持說明
+  - 依介紹目的、背景與推導的難點使用相關守則示範
 - review / revision
-  - 必讀被 review 的文字本身
-  - 至少讀 4 篇 native 作為輸出文風的參考
-  - 非新任務時，先前已接受的 Markdown 是必讀 baseline
-  - source text 視實際需求補讀
+  - 讀取目標文字與判斷忠實度所需的來源
+  - 續改時讀取目前章節與相鄰已接受內容，擷取穩定的行文與術語決策
+  - 依實際問題回查相應守則與示範
 - 規則 / linter / prompt / workflow 調整
-  - 必讀 benchmark、退化案例、目標文件與目前系統狀態
-  - `assets/*` 只在驗證具體退化時使用
+  - 讀取 benchmark、退化案例、目標文件與目前系統狀態
+  - 具體退化需要的原件與來源依任務讀取
 
-對中大型翻譯 scope 的批次一致性計畫，至少涵蓋：
+中大型翻譯的批次一致性計畫至少涵蓋：
 
 - 重複出現的 true name / label / token
 - 章節內定義術語
@@ -172,18 +166,13 @@
 - citation continuation 策略
 - bullet-list 使用策略
 
-### 3.3 `assets/native` 與 `assets/translation-pair`
+### 3.3 選材與使用示範
 
-- `assets/translation-pair`
-  - 用於術語映射、英文保留邊界、章節內定義術語的處理
-- `assets/native`
-  - 用於中文文風、段落切分、列點節奏與自然表達
-- 兩者衝突時：
-  - 術語 / 名稱保留 / 雙語邊界 -> 優先看 `assets/translation-pair`
-  - 段落節奏 / 分段 / 可讀性 -> 優先看 `assets/native`
-- 不可讓 `assets/native` 覆蓋 `assets/translation-pair` 已提供的直接原文與譯文對照依據
-- 對 code report 與 explanation 任務，source code / project docs / current output structure 的優先序高於不相關的翻譯對照依據
-- 對 style review，正在被 review 的文字、baseline 與 source text 的優先序高於不相關的一般參考材料
+文風判準與段落示範由 [style 第 4 節](output_style.md#4-段落節奏與-markdown-prose)保存，局部句法沿用 grammar 的既有例句。 起草時依要解決的問題閱讀相應示範，重新閱讀時核對自己作了哪些選擇及其根據
+
+原文、程式與專案文件提供技術事實，project-local 與全域 glossary 提供術語映射及名稱保留邊界。 使用者指定的原文／譯文對照可補充措辭依據，文風參考可補充分段、節奏與自然表達。 判斷術語時優先使用直接的來源、對照與 glossary，判斷行文時使用相關示範與已接受內容
+
+解說程式或 repo 時，讀取目前程式、文件與輸出結構。 審稿時，讀取目標文字、相關來源與延續性參考。 材料的用途與優先序隨正在判斷的問題決定
 
 ### 3.4 Project-local glossary
 
@@ -228,8 +217,8 @@
 - 若這次是在續改既有輸出，預設把目前輸出範圍前面緊鄰、且已接受的內容當成這一輪延續寫法的參考
 - 若沒有明確理由改變，沿用穩定的術語、引用形式、行文節奏與列點風格
 - `baseline` 可以是 explicit path、path list 或 `auto`
-- `baseline` 不是 source of truth，也不單獨決定工作流程
-- 它只提供文風與延續性錨點
+- 新任務的 `auto` 使用守則中的相關段落示範，explicit path / path list 按指定範圍讀取
+- 文風參考提供行文與延續性錨點，技術事實、術語及引用依各自的來源判斷
 
 ### 4.4 `context_memory.md`
 
@@ -261,45 +250,54 @@
   - 收集參考依據
   - 擷取延續性決策
   - 完成術語規劃、citation 決策與自然化計畫
-  - 確認 Lua runtime 與 linter 入口是否可用
+  - 確認 Python runtime 與 linter 入口是否可用
 
-### 5.2 自檢與 reread
+### 5.1.1 起草前的文章與段落安排
 
-- 寫入前至少做一次受影響範圍的 reread
-- 即使改動很小，也必須重新掃過：
-  - 片語自然度
-  - 虛詞與結構助詞
-  - 直譯僵硬
-  - AI 腔 anti-pattern
-- 若動到特定區塊，還要額外重跑：
-  - lead sentence / opening paragraph：開頭直接性檢查
-  - explanation-oriented passage：具體性檢查
-  - citation / hyperlink：引用一致性與不虛構引用檢查
-  - 公式 / 帶結構 markup：LaTeX / Markdown / HTML 正規化檢查
-  - 既有正式輸出：baseline 錨定與退化檢查
+讀完來源後，整理文章要回答的問題及讀者已知的背景。 為各段記錄核心問題、講述對象、所需前提、這段增加的資訊，以及下一段將依賴什麼。 篇幅與欄位依任務縮放，局部修稿可只記受影響段落與相鄰銜接
+
+依這份安排回查適用 grammar，記下選擇的理由與來源位置：主詞與省略、語態、體貌、修飾範圍、事件關係及術語。 例如，完成事件依 2.5 判斷「了」，受事主線依 2.3 與 2.6 選擇句骨，時間與條件依 2.8 表達。 來源缺少的前提另記待查證事項，忠實度沿 style 第 0 節檢查
+
+安排與查核紀錄放在任務筆記中。 起草沿已確認的資訊展開，讓讀者在使用新概念前取得理解它的前提
+
+### 5.2 重新閱讀段落與處理診斷
+
+修稿者會先重新閱讀文章，確認文章要回答的問題與內容順序，再逐段檢查句法及 linter 提示。 檢查段落時，一併閱讀目前段落與前後相鄰內容，確認讀者能沿著已交代的資訊理解下一句。 受影響範圍至少完成下列檢查：
+
+1. 說明這段要回答的問題，核對背景、對象與必要術語是否已在前文交代。 首次出現的概念需要足以理解後續動作的說明
+2. 核對例子中的條件、動作與結果如何支持正文。 例子引入的新資訊要接回正在解釋的問題，推導中的必要步驟也要能從文字或來源找到
+3. 找出每句的動作主體與代詞所指。 主詞可由緊鄰上下文辨認時，保留自然省略。 主體切換或有多個候選時，明示有來源依據的主詞
+4. 核對事件之間的時間、條件、轉折或因果關係。 連接語應表達已有依據的關係。 對完成事件與狀態變化，依 grammar 2.5 判斷動詞後或句尾的「了」是否自然。 定義、慣常行為與能力敘述也依該節判斷
+5. 依 style 4.2、4.3 核對句首承接、段落主線、主詞與主要動作的距離，以及重要新資訊是否位於完整的收束處。 多項重點各自取得可辨認的位置。 逐句標記被動表述，依 grammar 2.6 核對受事是否為需要強調或持續追蹤的對象，保留時記錄文章問題或前後文的依據。 不符合條件時，改用主動、無主句或框架先行，改寫不得補入來源未交代的施事
+6. 核對片語自然度、虛詞、修飾範圍、直譯句骨與制式句型。 依 style 第 3 節檢查補充內容的來源與任務用途，包含附註、獨立否定句、跨句與跨段敘述。 保留澄清時，記錄來源明示的內容或使用者已提出的具體問題。 找不到依據時，刪除自行追加的排除內容
+
+來源缺少背景、主體、因果或中間步驟時，記錄需要確認的資訊。 翻譯或修稿新增的事實仍須符合 `references/output_style.md` 第 0 節的忠實度要求
+
+linter 的合併診斷也按所在段落處理。 修稿者展開該診斷的全部子理由，核對原 ID、狀態與來源條款，再讀取最新文字及相鄰內容。 同一位置的不同問題分別判斷，每個仍啟用的理由都要記錄處理結果
+
+處理紀錄放在任務筆記或審閱報告中，使用下列三種狀態：
+
+- `fixed`：記錄修改內容及重驗結果
+- `kept-with-reason`：記錄支持保留的上下文、來源或適用例外
+- `unresolved`：記錄缺少的資訊與待確認問題，交付時明示
+
+修改後重新讀取檔案，重跑受影響段落及相鄰銜接的檢查。 舊診斷的處理紀錄保留，新一輪判斷使用最新文字。 開頭、解說、引用、公式或已接受的段落若有改動，繼續執行 5.4 的對應關卡
 
 ### 5.3 Linter profile、停用條件與例外
 
-- 使用本 skill 後，開工前必須先檢查目前環境是否可執行 Lua：
-  - 優先使用 `lua5.4`
-  - 若沒有 `lua5.4`，才改用 `lua`
-  - 兩者都不存在時，必須先回報，且不可宣稱 linter 已跑完
-- linter 路徑以 skill root 為基準是 `scripts/lint.lua`。 若目前不在 skill root，請用 `<skill-root>/scripts/lint.lua` 明確指定
-- 若輸出目標是一般 Markdown 段落或可由 linter 解析的 Markdown 檔，完成前必須至少規劃並執行一次適用的 `scripts/lint.lua`
-- 若 task 會刻意保留 custom CSS、raw HTML、雙語對照區塊或其他特殊結構，必須先決定：
-  - 哪些規則仍是 must-review
-  - 哪些只保留 advisory warning
-  - 是否使用 `--rules`、`--exclude` 或 `--profile` 收斂範圍
-- 常用 profile：
-  - `spec`
-  - `glossary`
-  - `meta`
-  - `final` / `default`
-- 不可忽視 `scripts/lint.lua` 的輸出，應嚴格檢查每個 warning，確認是否為誤判，並根據對應的上下文來做輸出的修正，達到 reread trigger 的效果
-- 完成回覆必須交代 linter 狀態：
-  - 實際執行的命令
-  - warning 是否已檢查
-  - 若未執行，具體原因與後續阻擋點
+開工前檢查 `python3`，必要版本為 Python 3.10 以上。 linter 使用標準函式庫，入口是 skill root 下的 `linter/lint.py`。 從其他目錄啟動時，使用完整的程式路徑：
+
+```bash
+python3 <skill-root>/linter/lint.py --profile final --format markdown <output-file>
+```
+
+一般 Markdown 輸出在完成前至少執行一次適用的 linter。 常用 profile 為 `spec`、`glossary`、`meta` 與 `final`／`default`。 `--rules` 與 `--exclude` 接受原 ID，profile 與排除先作用於子判準，再合併診斷
+
+任務需要保留 custom CSS、raw HTML、雙語對照或其他特殊結構時，依任務範圍決定必須審閱的規則、提示用途的規則及明確排除項目。 停用範圍與理由記錄在任務筆記中
+
+JSON 保存逐條命中，文字與 Markdown 合併同一位置的共同問題並保留各子理由。 `severity` 與規則狀態分別表示警告等級及檢查性質，閱讀報告時一併核對。 修稿者仍須依 5.2 的流程重新閱讀上下文，檢查背景、例子、推導、主體與語氣。 9 條人工審閱項目也依相關 grammar 條款檢查
+
+完成回覆交代實際命令、警告的處理結果及待確認事項。 runtime 或路徑錯誤造成驗證缺口時，說明具體原因與尚未完成的檢查
 
 ### 5.4 寫入前重新檢查受影響範圍
 

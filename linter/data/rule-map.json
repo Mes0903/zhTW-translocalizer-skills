@@ -1,0 +1,1222 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "id": "L001",
+      "module": "structure",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.1",
+      "warning_message": "可能殘留 sentence-per-line / extraction artifact，建議改回正常段落",
+      "summary": "sentence-per-line artifact",
+      "implementation": {
+        "start_line": 2375
+      }
+    },
+    {
+      "id": "L002",
+      "module": "structure",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.1",
+      "warning_message": "一般 prose 不應只換行不分段，請合併成單段或補空行",
+      "summary": "prose hard wrap without blank line",
+      "implementation": {
+        "start_line": 2401
+      }
+    },
+    {
+      "id": "L003",
+      "module": "structure",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.5、4.1",
+      "warning_message": "一般段落以全形冒號引出清單時，冒號後應保留空行",
+      "summary": "colon followed by list without blank line",
+      "implementation": {
+        "start_line": 2414
+      }
+    },
+    {
+      "id": "L004",
+      "module": "structure",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.1",
+      "warning_message": "相鄰 list item 或巢狀清單前不應有多餘空行",
+      "summary": "extra blank lines between list items",
+      "implementation": {
+        "start_line": 2435
+      }
+    },
+    {
+      "id": "L005",
+      "module": "structure",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_grammar.md` 4.2、5.2",
+      "warning_message": "偵測到純呈現層 HTML / CSS，應改為 Markdown 或移除",
+      "summary": "raw html presentational wrapper",
+      "implementation": {
+        "start_line": 2458
+      }
+    },
+    {
+      "id": "L006",
+      "module": "structure",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.2、5.2",
+      "warning_message": "偵測到來源抽取中介痕跡，正式輸出不應保留",
+      "summary": "source extraction artifact leftover",
+      "implementation": {
+        "start_line": 2492
+      }
+    },
+    {
+      "id": "L007",
+      "module": "prose",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.10、`references/output_style.md` 3",
+      "warning_message": "偵測到 stock anti-pattern 句型，建議改為直接陳述",
+      "summary": "anti-pattern stock phrase",
+      "implementation": {
+        "start_line": 2517
+      }
+    },
+    {
+      "id": "L008",
+      "module": "modifiers_complements",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.9",
+      "warning_message": "可能存在過長的「的」鏈，建議改寫成子句、拆句或後置說明",
+      "summary": "long de chain",
+      "implementation": {
+        "start_line": 2619
+      }
+    },
+    {
+      "id": "L009",
+      "module": "reference_voice",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.3",
+      "warning_message": "相鄰子句可能重複主語，請檢查是否可改為 topic chain",
+      "summary": "repeated subject chain",
+      "implementation": {
+        "start_line": 3352
+      }
+    },
+    {
+      "id": "L010",
+      "module": "reference_voice",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.3、2.6",
+      "warning_message": "這裡可能機械沿用了被動句，請檢查是否應改為主動、無主句或框架先行",
+      "summary": "passive overuse",
+      "implementation": {
+        "start_line": 3373
+      }
+    },
+    {
+      "id": "L011",
+      "module": "reference_voice",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.6",
+      "warning_message": "這個「把」字句可能沒有清楚的處置 / 結果語義，請再確認",
+      "summary": "ba without result state",
+      "implementation": {
+        "start_line": 3390
+      }
+    },
+    {
+      "id": "L012",
+      "module": "modifiers_complements",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.4",
+      "warning_message": "這裡可能有「的 / 地 / 得」使用問題",
+      "summary": "de di de confusion",
+      "implementation": {
+        "start_line": 3412
+      }
+    },
+    {
+      "id": "L013",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.5",
+      "warning_message": "這裡的「了」可能是誤用的完成體；若是句尾狀態變化標記（如 終於…了 / 愈來愈…了 / 現在…了 / 變得…了），應保留，只有在誤接於習慣／定義／靜態 predicate 後才移除",
+      "summary": "aspect le mismatch",
+      "implementation": {
+        "start_line": 3462
+      }
+    },
+    {
+      "id": "L014",
+      "module": "structure",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.1",
+      "warning_message": "檔案結尾應保留 EOF newline，請在文末補上一個換行",
+      "summary": "missing EOF newline",
+      "implementation": {
+        "start_line": 4577
+      }
+    },
+    {
+      "id": "L015",
+      "module": "references",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.3",
+      "warning_message": "academic citation apparatus 似乎不完整，請檢查正文標記與 reference section 是否成套出現",
+      "summary": "academic citation missing reference section",
+      "implementation": {
+        "start_line": 2633
+      }
+    },
+    {
+      "id": "L016",
+      "module": "references",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.3",
+      "warning_message": "citation 編號與 reference list 可能沒有一一對上，請檢查缺漏、重複項或 id 與顯示編號不一致",
+      "summary": "academic citation broken mapping",
+      "implementation": {
+        "start_line": 2656
+      }
+    },
+    {
+      "id": "L017",
+      "module": "structure",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 5.2、`references/workflow.md` 5.1、5.2",
+      "warning_message": "正式輸出不應保留 preflight / 自檢 / TODO 類中介區塊",
+      "summary": "preflight or selfcheck leftover",
+      "implementation": {
+        "start_line": 2692
+      }
+    },
+    {
+      "id": "L018",
+      "module": "structure",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 5.2",
+      "warning_message": "正式輸出不應保留對話痕跡或角色標籤",
+      "summary": "dialogue trace leftover",
+      "implementation": {
+        "start_line": 2718
+      }
+    },
+    {
+      "id": "L019",
+      "module": "structure",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 5.2",
+      "warning_message": "正式輸出可能殘留原文或對照區塊，請確認這不是中介草稿內容",
+      "summary": "source text block leftover",
+      "implementation": {
+        "start_line": 3068
+      }
+    },
+    {
+      "id": "L020",
+      "module": "prose",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.1",
+      "warning_message": "這段可能過密，請檢查是否應拆段或重排資訊",
+      "summary": "paragraph too dense",
+      "implementation": {
+        "start_line": 2732
+      }
+    },
+    {
+      "id": "L021",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.5",
+      "warning_message": "這裡的分號可能沒有必要，若不是平行列舉同一目的下的不同對象，請拆句、改逗號或重寫",
+      "summary": "semicolon overuse",
+      "implementation": {
+        "start_line": 2752
+      }
+    },
+    {
+      "id": "L022",
+      "module": "terms",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.7",
+      "warning_message": "偵測到疑似簡體中文寫法，請改回繁體臺灣用語",
+      "summary": "simplified Chinese present",
+      "implementation": {
+        "start_line": 2796
+      }
+    },
+    {
+      "id": "L023",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.2",
+      "warning_message": "中文 prose 的引號建議使用「」或『』，不要直接沿用 ASCII 雙引號",
+      "summary": "ASCII quote in CJK prose",
+      "implementation": {
+        "start_line": 2819
+      }
+    },
+    {
+      "id": "L024",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.1",
+      "warning_message": "中文 prose 可能誤用了半形標點，請檢查是否應改成全形中文標點",
+      "summary": "halfwidth punctuation in CJK prose",
+      "implementation": {
+        "start_line": 2846
+      }
+    },
+    {
+      "id": "L025",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_grammar.md` 3.2、3.3",
+      "warning_message": "半形括號若出現在中文 prose 中，括號與周圍中文之間應保留半形空格。 注意：本 workspace 的標準修法是改成全形括號（見 L044），本條僅在選擇保留半形括號時使用",
+      "summary": "halfwidth parentheses without spacing",
+      "implementation": {
+        "start_line": 2875
+      }
+    },
+    {
+      "id": "L026",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.2",
+      "warning_message": "code-like 純英文、數字或符號內容建議改用半形括號",
+      "summary": "fullwidth parentheses around code-like latin",
+      "implementation": {
+        "start_line": 2905
+      }
+    },
+    {
+      "id": "L027",
+      "module": "punctuation",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.4",
+      "warning_message": "本 workspace 的 Markdown 技術 prose 通常省略段末句號，請檢查這裡是否需要保留",
+      "summary": "terminal fullwidth period in markdown prose",
+      "implementation": {
+        "start_line": 2938
+      }
+    },
+    {
+      "id": "L028",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.5",
+      "warning_message": "偵測到破折號，請檢查是否該改用逗號、冒號、括號、分句或重寫處理",
+      "summary": "dash as punctuation",
+      "implementation": {
+        "start_line": 2951
+      }
+    },
+    {
+      "id": "L029",
+      "module": "punctuation",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.1",
+      "warning_message": "中文 prose 的行內列舉最後一項前通常建議補「與 / 及 / 或」，請檢查這裡是否需要",
+      "summary": "inline enumeration without final conjunction",
+      "implementation": {
+        "start_line": 2975
+      }
+    },
+    {
+      "id": "L030",
+      "module": "terms",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 1.3",
+      "warning_message": "這個雙語術語已經介紹過，後文通常應固定單一形式，不必重複整組雙語對",
+      "summary": "repeated bilingual term pair",
+      "implementation": {
+        "start_line": 2997
+      }
+    },
+    {
+      "id": "L031",
+      "module": "terms",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 1.3",
+      "warning_message": "這個術語在首次介紹後可能出現形式漂移，請固定 downstream form",
+      "summary": "term form drift after first bilingual",
+      "implementation": {
+        "start_line": 3096
+      }
+    },
+    {
+      "id": "L032",
+      "module": "terms",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/glossary.md`、`references/workflow.md` 3.1、3.4、`references/output_grammar.md` 1.1、1.3",
+      "warning_message": "這個雙語術語的中文形式和 glossary 偏好譯法不一致，請確認是否要改回既定術語",
+      "summary": "glossary preferred form mismatch",
+      "implementation": {
+        "start_line": 3144
+      }
+    },
+    {
+      "id": "L033",
+      "module": "terms",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.10、`references/output_style.md` 3",
+      "warning_message": "這個內部術語首次出現時可能沒有展開，請補一句白話說明或具體例子",
+      "summary": "unexpanded workspace jargon",
+      "implementation": {
+        "start_line": 3121
+      }
+    },
+    {
+      "id": "L034",
+      "module": "prose",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.10、`references/output_style.md` 3",
+      "warning_message": "這段可能退化成純 taxonomy 摘要，請補一個具體檔案、規則、決策或例子",
+      "summary": "taxonomy only summary",
+      "implementation": {
+        "start_line": 3171
+      }
+    },
+    {
+      "id": "L035",
+      "module": "terms",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.9、`references/glossary.md`",
+      "warning_message": "「回寫」通常保留給 write-back 類技術術語。若這裡只是一般寫入、寫回或更新動作，建議改成更精確的詞",
+      "summary": "huixie lexical misuse outside write-back term",
+      "implementation": {
+        "start_line": 3202
+      }
+    },
+    {
+      "id": "L036",
+      "module": "structure",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.1",
+      "warning_message": "一般 code block 前後應保留空行；若位於 list item 內可依上下文省略",
+      "summary": "top-level code fence missing surrounding blank line",
+      "implementation": {
+        "start_line": 3884
+      }
+    },
+    {
+      "id": "L037",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.4",
+      "warning_message": "同一行內的句號、問號、分號後若還有後續 prose，應保留一個半形空格",
+      "summary": "missing space after sentence punctuation",
+      "implementation": {
+        "start_line": 3914
+      }
+    },
+    {
+      "id": "L038",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.3",
+      "warning_message": "中文與獨立拉丁字詞或阿拉伯數字之間一般應保留一個半形空格",
+      "summary": "missing space between CJK and Latin or number",
+      "implementation": {
+        "start_line": 3947
+      }
+    },
+    {
+      "id": "L039",
+      "module": "structure",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.1",
+      "warning_message": "Markdown custom container fence 應像 code fence 一樣獨立成行：opener/closer 不黏內容，區塊內側不多留空行",
+      "summary": "custom container fence formatting",
+      "implementation": {
+        "start_line": 3974
+      }
+    },
+    {
+      "id": "L040",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.4",
+      "warning_message": "Markdown link 前後空格應以 [] 內的可見文字判斷；中文連中文不留空格，中英相接才留空格",
+      "summary": "markdown link spacing follows visible label",
+      "implementation": {
+        "start_line": 4031
+      }
+    },
+    {
+      "id": "L041",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.1、3.3",
+      "warning_message": "全形逗號前後不應有半形空格",
+      "summary": "halfwidth spaces around fullwidth comma",
+      "implementation": {
+        "start_line": 4072
+      }
+    },
+    {
+      "id": "L042",
+      "module": "references",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.4",
+      "warning_message": "Markdown link URL 不應保留 fbclid、utm_* 等外部來源追蹤參數，請只保留原始連結",
+      "summary": "tracking query parameter in markdown link",
+      "implementation": {
+        "start_line": 4094
+      }
+    },
+    {
+      "id": "L043",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.4",
+      "warning_message": "Markdown prose 句末不應以逗號、頓號或分號等延續標點收尾",
+      "summary": "terminal continuation punctuation",
+      "implementation": {
+        "start_line": 4111
+      }
+    },
+    {
+      "id": "L044",
+      "module": "punctuation",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.2",
+      "warning_message": "非全英文段落中的補充括號建議使用全形括號",
+      "summary": "halfwidth parentheses in CJK prose context",
+      "implementation": {
+        "start_line": 4127
+      }
+    },
+    {
+      "id": "L045",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.2",
+      "warning_message": "全形括號前後不應保留半形空格",
+      "summary": "spaces around fullwidth parentheses",
+      "implementation": {
+        "start_line": 4167
+      }
+    },
+    {
+      "id": "L046",
+      "module": "terms",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 1.3",
+      "warning_message": "中文上下文中的雙語術語應寫成「中文（English）」；若不是 true name / label / token，請調整順序",
+      "summary": "bilingual term should be Chinese first",
+      "implementation": {
+        "start_line": 4190
+      }
+    },
+    {
+      "id": "L047",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.3",
+      "warning_message": "中文與中文之間不應殘留半形空格",
+      "summary": "halfwidth space between CJK characters",
+      "implementation": {
+        "start_line": 4213
+      }
+    },
+    {
+      "id": "L048",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.2",
+      "warning_message": "書名號《》與章名號〈〉內外側不應保留半形空格",
+      "summary": "spaces around title marks",
+      "implementation": {
+        "start_line": 4229
+      }
+    },
+    {
+      "id": "L049",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.1",
+      "warning_message": "中文 prose 的 `!` 與 `?` 建議使用全形「！」「？」",
+      "summary": "halfwidth exclamation or question mark in CJK prose",
+      "implementation": {
+        "start_line": 4245
+      }
+    },
+    {
+      "id": "L050",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.2",
+      "warning_message": "中文 prose 的引號建議使用「」或『』，不要使用全形彎引號「“”」",
+      "summary": "curly double quote in CJK prose",
+      "implementation": {
+        "start_line": 4274
+      }
+    },
+    {
+      "id": "L051",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 3.2",
+      "warning_message": "中文引號「」與『』內外側不應保留半形空格",
+      "summary": "spaces around fullwidth quotes",
+      "implementation": {
+        "start_line": 4303
+      }
+    },
+    {
+      "id": "L052",
+      "module": "punctuation",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.1",
+      "warning_message": "一般 prose 行內不應出現連續兩個半形空白",
+      "summary": "internal consecutive halfwidth spaces",
+      "implementation": {
+        "start_line": 4319
+      }
+    },
+    {
+      "id": "L053",
+      "module": "terms",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/preferred_taiwan_terms.md`、`references/output_grammar.md` 1.1、3.7",
+      "warning_message": "這個詞可能偏離 workspace glossary 的臺灣技術用詞偏好",
+      "summary": "preferred Taiwan technical terms",
+      "implementation": {
+        "start_line": 4335
+      }
+    },
+    {
+      "id": "L054",
+      "module": "terms",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 1.2、1.3",
+      "warning_message": "這個英文詞在首次雙語介紹後又在中文語境中出現成 bare English，請確認下游是否固定用中文單一形式",
+      "summary": "bare English drift after bilingual anchor",
+      "implementation": {
+        "start_line": 4368
+      }
+    },
+    {
+      "id": "L055",
+      "module": "references",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.3",
+      "warning_message": "formal reference entry 的 bibliographic 主行、URL 子列點與中文說明應分開，不要把它們擠在同一行或同一個子列點",
+      "summary": "bibliography entry structure",
+      "implementation": {
+        "start_line": 4426
+      }
+    },
+    {
+      "id": "L056",
+      "module": "references",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.3",
+      "warning_message": "bibliography 主行的人名縮寫建議寫成「A. B. C. Surname」，不要把 initials 黏在一起",
+      "summary": "bibliography initials spacing",
+      "implementation": {
+        "start_line": 4451
+      }
+    },
+    {
+      "id": "L057",
+      "module": "references",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.3",
+      "warning_message": "bibliography 主行中的 `Vol.` / `No.` / `p.` / `pp.` 若後面接數字，縮寫後應保留半形空格",
+      "summary": "bibliography abbreviation number spacing",
+      "implementation": {
+        "start_line": 4466
+      }
+    },
+    {
+      "id": "L058",
+      "module": "references",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.3",
+      "warning_message": "年份簡寫如 `'95` 前通常要有半形空格，例如 `USENIX ATC '95`",
+      "summary": "bibliography year shorthand spacing",
+      "implementation": {
+        "start_line": 4491
+      }
+    },
+    {
+      "id": "L059",
+      "module": "references",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.3",
+      "warning_message": "英文所有格 `'s` 應直接接在前一個字後面，例如 `Developer's Manuals`",
+      "summary": "bibliography possessive apostrophe spacing",
+      "implementation": {
+        "start_line": 4506
+      }
+    },
+    {
+      "id": "L060",
+      "module": "references",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.3",
+      "warning_message": "bibliography 主行保留英文引號時，請使用 ASCII `\"` 與 `'`，不要使用彎引號或彎 apostrophe",
+      "summary": "bibliography curly quotes or apostrophes",
+      "implementation": {
+        "start_line": 4521
+      }
+    },
+    {
+      "id": "L061",
+      "module": "references",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 4.3",
+      "warning_message": "References 的中文說明子列點應使用中文標點，避免半形 `,` / `:` / `;`，且一般不以半形 `.` 收尾",
+      "summary": "bibliography explanation uses Chinese punctuation",
+      "implementation": {
+        "start_line": 4536
+      }
+    },
+    {
+      "id": "L101",
+      "module": "reference_voice",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.3",
+      "warning_message": "這個前置名詞可能是無定短語，請檢查是否真的適合當話題",
+      "summary": "nonspecific np fronted as topic",
+      "implementation": {
+        "start_line": 3502
+      }
+    },
+    {
+      "id": "L102",
+      "module": "reference_voice",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.7",
+      "warning_message": "「自己」可能有多重先行詞歧義，請檢查照應是否清楚",
+      "summary": "self ziji ambiguity",
+      "implementation": {
+        "start_line": 3517
+      }
+    },
+    {
+      "id": "L103",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.3",
+      "warning_message": "這裡可能混用了「是」與「有」的功能，請檢查是判斷、存在還是焦點句",
+      "summary": "shi you confusion",
+      "implementation": {
+        "start_line": 3536
+      }
+    },
+    {
+      "id": "L104",
+      "module": null,
+      "status": "review-only",
+      "implemented": false,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_grammar.md` 2.6",
+      "warning_message": "這裡可能需要檢查「被」與「受」的受動表述是否自然",
+      "summary": "bei shou confusion",
+      "implementation": null
+    },
+    {
+      "id": "L105",
+      "module": "modifiers_complements",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.2、2.9",
+      "warning_message": "這裡可能有過重的「的」字結構或名物化，請檢查是否應改回事件子句",
+      "summary": "de nominalization overuse",
+      "implementation": {
+        "start_line": 3554
+      }
+    },
+    {
+      "id": "L106",
+      "module": "reference_voice",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.6",
+      "warning_message": "這個「把」字句後面的名詞可能不是定指或殊指，請檢查是否自然",
+      "summary": "ba object lacks clear reference",
+      "implementation": {
+        "start_line": 3577
+      }
+    },
+    {
+      "id": "L107",
+      "module": "reference_voice",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.6、2.9",
+      "warning_message": "這個「把」字句可能缺少有界事件或結果狀態，請檢查是否應改回一般動詞句",
+      "summary": "ba clause without bounded endpoint",
+      "implementation": {
+        "start_line": 3595
+      }
+    },
+    {
+      "id": "L108",
+      "module": "modifiers_complements",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.2、2.9",
+      "warning_message": "這裡可能把事件過度壓成「名詞組 + 的 + 動詞組」書面結構，請檢查是否應還原成事件子句",
+      "summary": "np de vp overcompression",
+      "implementation": {
+        "start_line": 3612
+      }
+    },
+    {
+      "id": "L109",
+      "module": null,
+      "status": "review-only",
+      "implemented": false,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_grammar.md` 2.3",
+      "warning_message": "這個前置結構可能只是表面換序，請檢查是否真的形成自然的話題結構",
+      "summary": "fronted phrase without clear frame",
+      "implementation": null
+    },
+    {
+      "id": "L110",
+      "module": null,
+      "status": "review-only",
+      "implemented": false,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_grammar.md` 2.6",
+      "warning_message": "這裡可能把「受 / 受到」當成一般被動替代項，請檢查語義是否真的自然",
+      "summary": "shou as generic passive substitute",
+      "implementation": null
+    },
+    {
+      "id": "L111",
+      "module": "reference_voice",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.6",
+      "warning_message": "這個「受 / 受到」後面可能接了不自然的動詞事件或結果結構，請檢查是否應改回主動或「被」句",
+      "summary": "shou with bare event or resultative complement",
+      "implementation": {
+        "start_line": 3633
+      }
+    },
+    {
+      "id": "L112",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.3",
+      "warning_message": "這個存在句後面的名詞可能是定指成分，請檢查是否其實不適合用「有」引入",
+      "summary": "you sentence with definite np",
+      "implementation": {
+        "start_line": 3653
+      }
+    },
+    {
+      "id": "L113",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.3",
+      "warning_message": "這裡的「是」可能插進了不自然的謂語內部位置，請檢查是否應改回普通句",
+      "summary": "focus shi inside predicate",
+      "implementation": {
+        "start_line": 3022
+      }
+    },
+    {
+      "id": "L114",
+      "module": "modifiers_complements",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.9",
+      "warning_message": "這個「V得...」結構後面可能保留了不自然的顯性賓語，請檢查它是否其實不是結果補語",
+      "summary": "descriptive v de with overt object",
+      "implementation": {
+        "start_line": 3683
+      }
+    },
+    {
+      "id": "L115",
+      "module": "modifiers_complements",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.9",
+      "warning_message": "這裡的動詞後成分可能過度擁擠，請檢查是否應重排語序或拆句",
+      "summary": "overloaded postverbal stack",
+      "implementation": {
+        "start_line": 3703
+      }
+    },
+    {
+      "id": "L116",
+      "module": "reference_voice",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.7",
+      "warning_message": "這個代詞可能在承擔局部反身指涉，請檢查是否應改成「自己」或明示名詞",
+      "summary": "local pronoun used for reflexive meaning",
+      "implementation": {
+        "start_line": 3723
+      }
+    },
+    {
+      "id": "L117",
+      "module": null,
+      "status": "review-only",
+      "implemented": false,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_grammar.md` 2.7",
+      "warning_message": "這個「自己」可能引入不必要的主語 / 說話者觀點，請檢查照應錨點是否清楚",
+      "summary": "ziji under attitude verb without clear anchor",
+      "implementation": null
+    },
+    {
+      "id": "L118",
+      "module": "reference_voice",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.6、2.7",
+      "warning_message": "這個「自己」在被字句中可能同時有兩個候選先行語，請檢查是否需要主動消歧",
+      "summary": "ziji in bei clause dual antecedent ambiguity",
+      "implementation": {
+        "start_line": 3749
+      }
+    },
+    {
+      "id": "L119",
+      "module": null,
+      "status": "review-only",
+      "implemented": false,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_grammar.md` 2.6",
+      "warning_message": "這個「被」字句可能平白加重了受害語氣，請檢查原文是否真的要求受影響者視角",
+      "summary": "bei with added harm tone",
+      "implementation": null
+    },
+    {
+      "id": "L120",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.3、2.5",
+      "warning_message": "這裡的「有 + V」可能只是口氣填充或泛用完成標記，請檢查是否應改成普通句、已、曾或句尾「了」",
+      "summary": "you plus verb as generic aspect marker",
+      "implementation": {
+        "start_line": 3322
+      }
+    },
+    {
+      "id": "L121",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.3",
+      "warning_message": "這個主語看起來不像能承擔意志或主動選擇，請檢查是否應改成「會 / 可能 / 可以 / 應該」",
+      "summary": "nonagentive subject with control modal",
+      "implementation": {
+        "start_line": 3768
+      }
+    },
+    {
+      "id": "L122",
+      "module": "modifiers_complements",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.4",
+      "warning_message": "這裡可能少了結構助詞「的」，請檢查修飾邊界是否清楚",
+      "summary": "missing associative de after modifier",
+      "implementation": {
+        "start_line": 3791
+      }
+    },
+    {
+      "id": "L123",
+      "module": "modifiers_complements",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.4",
+      "warning_message": "這裡可能少了結構助詞「地」，請檢查修飾關係是否足夠清楚",
+      "summary": "missing adverbial di after modifier",
+      "implementation": {
+        "start_line": 3808
+      }
+    },
+    {
+      "id": "L124",
+      "module": "modifiers_complements",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.4、2.9",
+      "warning_message": "這裡可能少了結構助詞「得」，請檢查是否需要明確標出補語關係",
+      "summary": "missing complement de after verb",
+      "implementation": {
+        "start_line": 3825
+      }
+    },
+    {
+      "id": "L125",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.8",
+      "warning_message": "這裡的成對連接詞可能沒有補完整，請檢查中文的對比 / 因果骨架是否清楚",
+      "summary": "paired conjunction incomplete",
+      "implementation": {
+        "start_line": 3228
+      }
+    },
+    {
+      "id": "L126",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-ready",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.8",
+      "warning_message": "這裡可能把連接詞堆成一串，請保留最小必要的一個就好",
+      "summary": "stacked discourse marker chain",
+      "implementation": {
+        "start_line": 3043
+      }
+    },
+    {
+      "id": "L127",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.5",
+      "warning_message": "這個將至事件句可能少了句尾「了」，請檢查是否應寫成「快要……了 / 就要……了」",
+      "summary": "imminent event without sentence final le",
+      "implementation": {
+        "start_line": 3253
+      }
+    },
+    {
+      "id": "L128",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.5",
+      "warning_message": "這裡若是否定已完成事件，通常應優先用「沒 / 沒有」而不是「不」",
+      "summary": "completed event negated with bu",
+      "implementation": {
+        "start_line": 3289
+      }
+    },
+    {
+      "id": "L129",
+      "module": "predicate_aspect_connectives",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.5",
+      "warning_message": "這裡的「了」可能落在句尾位置。若你想表完成體，請檢查是否應改成「V了 + 數量短語」",
+      "summary": "count phrase after sentence final le",
+      "implementation": {
+        "start_line": 3842
+      }
+    },
+    {
+      "id": "L130",
+      "module": "structure",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_grammar.md` 2.10、`references/output_style.md` 3",
+      "warning_message": "這裡可能把內部 workflow 控制詞直接寫進正式中文，建議改成完整句子，說明誰在什麼情況下做什麼",
+      "summary": "internal control label leaked into formal prose",
+      "implementation": {
+        "start_line": 3188
+      }
+    },
+    {
+      "id": "L131",
+      "module": null,
+      "status": "review-only",
+      "implemented": false,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_grammar.md` 2.1",
+      "warning_message": "這個詞彙邊界可能需要人工檢查：請確認它是固定詞、可拆短語、複合詞、離合詞，還是新詞 / 專名用法",
+      "summary": "word boundary or separable verb needs review",
+      "implementation": null
+    },
+    {
+      "id": "L132",
+      "module": null,
+      "status": "review-only",
+      "implemented": false,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_grammar.md` 2.7",
+      "warning_message": "這個代詞可能不只是普通共指，請檢查是否受量化詞、條件句或前文無定名詞限制",
+      "summary": "quantified pronoun reading needs review",
+      "implementation": null
+    },
+    {
+      "id": "L133",
+      "module": null,
+      "status": "review-only",
+      "implemented": false,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_grammar.md` 2.3",
+      "warning_message": "這個「們」可能只是機械式 plural，請檢查名詞是否為人稱、人類或已群體化用法",
+      "summary": "nonhuman men plural needs review",
+      "implementation": null
+    },
+    {
+      "id": "L134",
+      "module": null,
+      "status": "review-only",
+      "implemented": false,
+      "enabled_by_default": false,
+      "owner_spec": "`references/output_style.md` 3",
+      "warning_message": "這段教學式說明可能理論負載過高，請先寫核心規則，再寫進階條件與例外",
+      "summary": "teaching explanation overloads theory",
+      "implementation": null
+    }
+  ]
+}
