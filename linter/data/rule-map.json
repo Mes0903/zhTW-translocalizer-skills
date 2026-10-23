@@ -1214,9 +1214,35 @@
       "implemented": false,
       "enabled_by_default": false,
       "owner_spec": "`references/output_style.md` 3",
-      "warning_message": "這段教學式說明可能理論負載過高，請先寫核心規則，再寫進階條件與例外",
+      "warning_message": "這段教學式說明可能理論負載過高，請先交代理解所需的背景與問題，再介紹核心規則、進階條件與例外",
       "summary": "teaching explanation overloads theory",
       "implementation": null
+    },
+    {
+      "id": "L137",
+      "module": "prose_clarity",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_style.md` 3",
+      "warning_message": "這句可能附加保證或排除內容，請核對這項補充的任務用途與來源，保留時記錄具體理由",
+      "summary": "unsolicited assurance or exclusion candidate",
+      "implementation": {
+        "start_line": 100
+      }
+    },
+    {
+      "id": "L138",
+      "module": "prose_clarity",
+      "status": "lint-hybrid",
+      "implemented": true,
+      "enabled_by_default": true,
+      "owner_spec": "`references/output_style.md` 4.1",
+      "warning_message": "這個文章或章節開頭可能只有觀看指令或行程預告，請核對上下文、來源與任務所需的問題、對象及背景",
+      "summary": "article or section opening orientation candidate",
+      "implementation": {
+        "start_line": 113
+      }
     }
   ]
 }

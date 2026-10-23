@@ -48,13 +48,13 @@ JSON 保留逐條結果。 每個 warning 有 `path`、`line`、`col`、`lint_id
 
 ## 主題導覽
 
-這 15 個主題用於查找相關規則。 95 個原 ID 均有保存，86 條有自動實作，84 條預設啟用。 9 條人工審閱項目為 L104、L109、L110、L117、L119、L131、L132、L133 及 L134
+這 15 個主題用於查找相關規則。 95 個原 ID 均有保存，另新增 L137、L138，共 97 個 ID，88 條有自動實作，86 條預設啟用。 9 條人工審閱項目為 L104、L109、L110、L117、L119、L131、L132、L133 及 L134
 
 | 主題 | 原 ID |
 | --- | --- |
 | [Markdown 區塊與換行](catalog/markdown_structure.md) | L001、L002、L003、L004、L005、L014、L036、L039 |
 | [正式輸出殘留](catalog/output_residue.md) | L006、L017、L018、L019、L130 |
-| [文風與說明負擔](catalog/prose_clarity.md) | L007、L020、L034、L134 |
+| [文風與說明負擔](catalog/prose_clarity.md) | L007、L020、L034、L134、L137、L138 |
 | [句讀、列舉與連接詞](catalog/sentence_connections.md) | L021、L027、L028、L029、L043、L125、L126 |
 | [引號、標點與括號字形](catalog/punctuation_forms.md) | L023、L024、L025、L026、L044、L049、L050 |
 | [可見文字邊界與空格](catalog/visible_spacing.md) | L037、L038、L040、L041、L045、L047、L048、L051、L052 |
@@ -72,7 +72,8 @@ JSON 保留逐條結果。 每個 warning 有 `path`、`line`、`col`、`lint_id
 
 - `lintlib/core.py` 提供文件視圖與定位介面，`document_views.py` 保存行分類與 glossary 解析
 - `lintlib/clauses.py` 共用保護區、書目、子句及語言訊號。 `byte_patterns.py` 保留原 ASCII 類別與位元組匹配語義
-- `lintlib/rules/` 的八個模組按共用分析分配 86 條實作。 三組重疊規則共用候選掃描，原 ID 在條件判斷後仍各自產生理由
+- `lintlib/rules/` 的九個模組按共用分析分配 88 條實作。 三組重疊規則共用候選掃描，原 ID 在條件判斷後仍各自產生理由
+- `lintlib/rules/prose_clarity.py` 以窄句型找 L137 保證／排除候選，並檢查文件及每個標題後首個正文段落的 L138 開頭候選。 兩者皆為人工核對上下文、來源與任務用途的提示，限制與誤報見[文風目錄](catalog/prose_clarity.md)
 - `lintlib/lexicons.py` 從 `linter/data/lexicons.json` 載入唯一的領域詞表
 - `lintlib/registry.py` 選擇及分派原 ID，`report.py` 產生原始 JSON 與合併報告
 - `linter/data/rule-map.json` 保存執行所需的規則 ID、狀態、預設設定、提示與來源條款

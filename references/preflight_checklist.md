@@ -97,7 +97,7 @@
   - [ ] 動到 LaTeX / Markdown / HTML 結構
   - [ ] 動到對 baseline 敏感的段落
 - [ ] 對每個受影響區塊，決定寫入前要重新檢查哪些關卡
-- [ ] 若有動到開頭，規劃重新檢查開頭段落直接性
+- [ ] 若有動到文章或章節開頭，依 style 4.1 規劃檢查已知起點、對象與問題、新主題用途及導覽銜接
 - [ ] 若有動到 explanation-oriented passage，規劃重新檢查解說段落具體性
 - [ ] 若在修訂已接受的 output，規劃重新檢查 baseline 錨定、輸出檔延續性與對照 baseline 的退化檢查
 - [ ] 若有動到 citation 行為，規劃重新檢查 citation 一致性與不虛構引用
@@ -194,9 +194,9 @@
 - [ ] 標記含數量詞的子句，確認 `V了 + 數量短語` 與句尾 `了` 是否會帶來不同解讀
 - [ ] 標記可能需要簡潔連接詞如 `同時 / 但 / 因此 / 此外` 的子句關係
 - [ ] 標記採用框架先行順序後會更聚焦的地方
-- [ ] 標記仍依賴 stock contrast / exposition template，而非直接陳述主題的 opening sentence 或 opening paragraph
+- [ ] 依 style 4.1 標記尚未交代對象與問題，就開始指示閱讀、列方法或安排導覽的文章及章節開頭
 - [ ] 標記「否定句 A，再用 `而是 / 其實 / 真正...` 補充 B」的句型。 若 B 才是重點，直接改寫成 B
-- [ ] 已依 style 第 3 節標記為預防自行假設的誤解而追加的澄清、否定、保證或範圍說明，包含附註、獨立句、跨句及跨段內容。 保留時已記錄來源明示的內容或使用者的具體提問，無依據的排除內容已規劃刪除
+- [ ] 已依 style 第 3 節標記額外澄清、排除、保證、不必做某事的補充與範圍說明，逐項記錄任務用途。 保留時有對應的來源、具體提問或工作紀錄，已規劃刪除無任務用途的補充，並保留同句中的必要資訊
 - [ ] 若本 task 是 explanation-oriented writing，標記那些只列抽象類別名稱、卻沒說明它們實際做什麼的 layer / folder / rule 摘要
 - [ ] 若本 task 是 explanation-oriented writing，標記那些首次出現卻沒展開解釋的內部 workspace 術語
 - [ ] 若本 task 是 explanation-oriented writing，為每個 major layer 或 subsystem 至少規劃一個具體錨點
@@ -231,7 +231,7 @@
 - [ ] 若 scope 較大，批次一致性計畫已存在
 - [ ] 起草前已理解正式輸出一致性邊界
 - [ ] 已明確檢查高風險虛詞與結構標記
-- [ ] 已檢查開頭策略，確保開頭不依賴制式 anti-pattern 開頭
+- [ ] 已依 style 4.1 檢查文章及各章節開頭，能指出對象、問題、新主題用途與前文的承接根據
 - [ ] explanation-oriented passage 在 relevant 時已有具體化計畫與術語展開計畫
 - [ ] 已將 `了` 視為體貌 / 狀態變化標記檢查，而不是只是對應英文時態
 - [ ] 起草前已明確解決任何 user-vs-spec 衝突
@@ -244,4 +244,4 @@
   - [ ] 已決定 profile / `--rules` / `--exclude` 等範圍控制方式
   - [ ] 若本次 action 會刻意保留 CSS、raw HTML、雙語對照區塊或 artifact 結構，已決定哪些 lint rule 要停用、縮限或只當 advisory warning
   - [ ] 診斷依 workflow 5.2 記錄修正、附理由保留或待確認，修改後讀取最新文字並重驗相鄰銜接
-  - [ ] 完成回覆會交代 linter 命令與結果
+  - [ ] 進度更新及完成回覆送出前會依 style 第 3 節檢查額外補充，完成回覆會交代 linter 命令與結果
