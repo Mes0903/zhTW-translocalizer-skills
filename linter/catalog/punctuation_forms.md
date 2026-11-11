@@ -1,6 +1,6 @@
 # 引號、標點與括號字形
 
-本目錄保存各 ID 的判準、來源條款、提示與風險說明。 執行時的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表保存在 `linter/data/lexicons.json`
+各 ID 的判準、來源條款、提示與風險說明保存在本目錄，執行時使用的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表則保存在 `linter/data/lexicons.json`
 
 ### L023 `ascii_quote_in_cjk_prose`
 
@@ -37,14 +37,14 @@
 - warning message：`半形括號若出現在中文 prose 中，括號與周圍中文之間應保留半形空格。 注意：本 workspace 的標準修法是改成全形括號（見 L044），本條僅在選擇保留半形括號時使用`
 - false positive risk：低
 - autofix：部分可行
-- runtime note：目前預設停用。 本 workspace 的標準修法是把半形括號改成全形（由 `L044` 處理），若刻意保留半形括號才用 `--rules L025` 手動開啟
+- runtime note：目前預設停用，本 workspace 的標準修法是把半形括號改成全形（由 `L044` 處理），若刻意保留半形括號才用 `--rules L025` 手動開啟
 
 ### L026 `fullwidth_parentheses_around_code_like_latin`
 
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 3.2
 - signal：非中文 prose 上下文中，全形括號包住 code-like 純英文、數字或符號內容
-- detection strategy：偵測 `（...）` 內部只含 code-like ASCII token 的樣式。 Markdown 圖片 caption 行與含 CJK 的中文 prose 行不檢查，中文上下文中的括號樣式由 L044 管
+- detection strategy：偵測 `（...）` 內部只含 code-like ASCII token 的樣式，排除 Markdown 圖片 caption 行與含 CJK 的中文 prose 行，中文上下文中的括號樣式由 L044 管
 - needs source context：否
 - auxiliary inputs：code-like token 判定器
 - warning message：`code-like 純英文、數字或符號內容建議改用半形括號`

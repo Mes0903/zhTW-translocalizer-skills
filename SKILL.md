@@ -5,7 +5,7 @@ description: 用於此 repo 內的臺灣繁體中文翻譯、改寫、修稿、�
 
 # zhTW-Translocalizer
 
-這份 `SKILL.md` 是本 skill 的唯一入口與導引
+使用本 skill 時，以這份 `SKILL.md` 作為唯一入口，確認執行環境、必讀文件與各份規則的分工，再依任務範圍讀取對應的參考資料
 
 ## 啟動後立即確認
 
@@ -19,7 +19,7 @@ python3 --version
 
 ## 安裝 / 配置
 
-將此目錄安裝成一個 skill root，保持 `SKILL.md`、`references/` 與 `linter/` 的相對位置。 linter 使用 Python 標準函式庫。 安裝後執行驗證：
+將此目錄安裝成一個 skill root，並保持 `SKILL.md`、`references/` 與 `linter/` 的相對位置，讓入口能沿既定路徑找到規則與檢查程式。 linter 使用 Python 標準函式庫，安裝後可用下列命令確認規則清單能正常載入：
 
 ```bash
 cd <skill-root>
@@ -49,5 +49,5 @@ python3 linter/lint.py --list-rules
 - 忠實度、自然化、語氣、AI 腔與段落節奏，一律直接遵守 `references/output_style.md`
 - 起草、修稿或改規則前，必須先完成 `references/preflight_checklist.md`
 - 對任何正式 Markdown 輸出檔的新增或修改，完成前必須實際執行 linter，並在回覆中說明使用的命令與結果。 若因 Python 或路徑問題無法執行，必須明確回報為未完成的驗證缺口
-- 欄位名、模式名與其他 workflow 控制標籤只供內部判定。 若正式輸出需要提到相關概念，改寫成完整句子，不要直接把標籤當成中文術語
+- 正式輸出需要提到內部欄位、模式或其他 workflow 控制標籤所代表的概念時，改寫成完整句子，說明實際的判斷或操作，不要直接把標籤當成中文術語
 - 不要在 skill 內重複規則全文，也不要把 task-local 筆記誤當成全域規則

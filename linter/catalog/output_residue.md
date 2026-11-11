@@ -1,13 +1,13 @@
 # 正式輸出殘留
 
-本目錄保存各 ID 的判準、來源條款、提示與風險說明。 執行時的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表保存在 `linter/data/lexicons.json`
+各 ID 的判準、來源條款、提示與風險說明保存在本目錄，執行時使用的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表則保存在 `linter/data/lexicons.json`
 
 ### L006 `source_extraction_artifact_leftover`
 
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 4.2、5.2
 - signal：正式輸出殘留來源抽取產生的頁碼或 `_page_` 類中介檔名
-- detection strategy：檔名樣式與頁碼樣式。 一般 Markdown 圖片語法不算命中
+- detection strategy：依檔名與頁碼樣式偵測來源抽取痕跡，一般 Markdown 圖片語法不算命中
 - needs source context：否
 - auxiliary inputs：來源抽取 artifact 樣式清單
 - warning message：`偵測到來源抽取中介痕跡，正式輸出不應保留`
@@ -55,7 +55,7 @@
 - 狀態：lint-hybrid
 - owner spec：`references/output_grammar.md` 2.10、`references/output_style.md` 3
 - signal：直接把內部 workflow 控制標籤寫進正式中文，例如用 `前一輪已確認的決定`、`這次輸出要交付的內容`、`遇到規則衝突時先停下確認` 這類標籤化說法取代完整句子
-- detection strategy：掃描可見 prose line。 若命中內部控制詞名單，就警告使用者改成完整句子，說明誰在什麼情況下做什麼
+- detection strategy：掃描可見 prose line，命中內部控制詞名單時，警告使用者改成完整句子，說明誰在什麼情況下做什麼
 - needs source context：否
 - auxiliary inputs：內部控制詞名單
 - warning message：`這裡可能把內部 workflow 控制詞直接寫進正式中文，建議改成完整句子，說明誰在什麼情況下做什麼`

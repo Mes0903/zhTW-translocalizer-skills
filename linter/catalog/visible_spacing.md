@@ -1,13 +1,16 @@
 # 可見文字邊界與空格
 
-本目錄保存各 ID 的判準、來源條款、提示與風險說明。 執行時的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表保存在 `linter/data/lexicons.json`
+各 ID 的判準、來源條款、提示與風險說明保存在本目錄，執行時使用的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表則保存在 `linter/data/lexicons.json`
 
 ### L037 `missing_space_after_sentence_punctuation`
 
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 3.4
 - signal：同一 Markdown 行內的 `。`、`？`、`；` 後面還有後續 prose，但中間沒有半形空格
-- detection strategy：掃描非 code / 非 table / 非 heading / 非 blockquote 的 prose 與 list item，排除 inline code 內的標點。 若標點後先接閉括號，會跳過閉合符號後再檢查是否有半形空格。 若標點後先接中文閉引號，則視為引文內標點，不要求引號外側空格，交由 L051 檢查中文引號貼合。 若後面緊接全形逗號、頓號或其他中文標點，則不要求額外空格
+- detection strategy：掃描非 code / 非 table / 非 heading / 非 blockquote 的 prose 與 list item，排除 inline code 內的標點，並依標點後的字元處理：
+  - 若先接閉括號，會跳過閉合符號後再檢查是否有半形空格
+  - 若先接中文閉引號，則視為引文內標點，不要求引號外側空格，交由 L051 檢查中文引號貼合
+  - 若緊接全形逗號、頓號或其他中文標點，則不要求額外空格
 - needs source context：否
 - auxiliary inputs：無
 - warning message：`同一行內的句號、問號、分號後若還有後續 prose，應保留一個半形空格`
@@ -31,7 +34,9 @@
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 4.4
 - signal：Markdown link 前後空格沒有依照 `[]` 內的 visible label 判斷，例如 `[論文](...) 在` 多了空格，或 `看[draft](...)版本` 少了空格
-- detection strategy：解析非 image 的 inline Markdown link，忽略 URL，只取 label 的第一個與最後一個可見 CJK / ASCII token 邊界。 若 label 邊界與外側文字為中英相接，要求一個半形空格。 若為中文連中文，要求不留空格
+- detection strategy：解析非 image 的 inline Markdown link，忽略 URL，只取 label 的第一個與最後一個可見 CJK / ASCII token 邊界，依邊界與外側文字的關係判斷空格：
+  - 中英相接時，要求一個半形空格
+  - 中文連中文時，要求不留空格
 - needs source context：否
 - auxiliary inputs：無
 - warning message：`Markdown link 前後空格應以 [] 內的可見文字判斷。 中文連中文不留空格，中英相接才留空格`
@@ -79,7 +84,7 @@
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 3.2
 - signal：中文書名號 `《》` 或章名號 `〈〉` 內外側殘留半形空格，例如 `請看 《手冊》`、`《 第一章 》`
-- detection strategy：解析非 image、非 code、非 table 的可見文字行。 若開標前後或閉標前後直接接半形空格就發 warning
+- detection strategy：解析非 image、非 code、非 table 的可見文字行，若開標前後或閉標前後直接接半形空格就發 warning
 - needs source context：否
 - auxiliary inputs：無
 - warning message：`書名號《》與章名號〈〉內外側不應保留半形空格`

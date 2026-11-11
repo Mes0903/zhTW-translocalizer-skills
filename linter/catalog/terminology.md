@@ -1,6 +1,6 @@
 # 臺灣用語、術語與雙語一致性
 
-本目錄保存各 ID 的判準、來源條款、提示與風險說明。 執行時的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表保存在 `linter/data/lexicons.json`
+各 ID 的判準、來源條款、提示與風險說明保存在本目錄，執行時使用的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表則保存在 `linter/data/lexicons.json`
 
 ### L022 `simplified_chinese_present`
 
@@ -55,7 +55,7 @@
 - 狀態：lint-hybrid
 - owner spec：`references/output_grammar.md` 2.10、`references/output_style.md` 3
 - signal：`參考依據`、`規則優先序`、`術語邊界`、`工作模式`、`開工前檢查關卡`、`baseline` 等內部術語首次出現時沒有展開
-- detection strategy：維護 jargon 名單。 偵測首次出現後同句或下一句是否缺少展開訊號，如 `指的是`、`也就是`、`例如`、`會`、`用來`、具體檔名、路徑或 rule id
+- detection strategy：維護 jargon 名單，並偵測名單中的術語首次出現後，同句或下一句是否缺少展開訊號，如 `指的是`、`也就是`、`例如`、`會`、`用來`、具體檔名、路徑或 rule id
 - needs source context：否
 - auxiliary inputs：workspace jargon 名單
 - warning message：`這個內部術語首次出現時可能沒有展開，請補一句白話說明或具體例子`
@@ -67,7 +67,7 @@
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 2.9、`references/glossary.md`
 - signal：把 `回寫` 當成一般 workflow 或寫入動詞使用，而不是 `write-back` 類術語
-- detection strategy：偵測 prose line 中的 `回寫`。 若同句沒有 `write-back`、`回寫快取`、`回寫策略`、`快取回寫` 等術語訊號，就警告
+- detection strategy：若 prose line 出現 `回寫`，而同句沒有 `write-back`、`回寫快取`、`回寫策略`、`快取回寫` 等術語訊號，就警告
 - needs source context：否
 - auxiliary inputs：`write-back` 術語白名單
 - warning message：`「回寫」通常保留給 write-back 類技術術語。 若這裡只是一般寫入、寫回或更新動作，建議改成更精確的詞`

@@ -1,6 +1,6 @@
 # 話題、指涉與代詞
 
-本目錄保存各 ID 的判準、來源條款、提示與風險說明。 執行時的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表保存在 `linter/data/lexicons.json`
+各 ID 的判準、來源條款、提示與風險說明保存在本目錄，執行時使用的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表則保存在 `linter/data/lexicons.json`
 
 ### L009 `repeated_subject_chain`
 

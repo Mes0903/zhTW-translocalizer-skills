@@ -36,11 +36,16 @@ python3 linter/lint.py --list-rules
 
 profile 與明示排除在合併診斷前作用於子判準。 例如 `--rules L001,L002 --profile spec` 只執行 L001。 L005 與 L025 保留預設停用，明示選取時可以執行。 未知 ID、人工審閱 ID、未知 profile 或檔案錯誤會回報原因並退出非零
 
-一般 warning 退出 0。 指定 `--fail-on-warning` 且有命中時退出 1。 多檔都成功讀取並檢查後才輸出報告，讀檔錯誤會回報尚未完成的本次檢查
+warning 的退出狀態依選項決定：
+
+- 一般 warning 退出 0
+- 指定 `--fail-on-warning` 且有命中時退出 1
+
+多檔都成功讀取並檢查後才輸出報告，讀檔錯誤會回報尚未完成的本次檢查
 
 ## 報告與段落檢查
 
-JSON 保留逐條結果。 每個 warning 有 `path`、`line`、`col`、`lint_id`、`message` 及 `severity`，summary 有 `warning_count` 與 `files`。 行與欄從 1 開始，欄位計算 Unicode code point。 內部視窗仍保留原位元組意義，例如 L105 的 18 位元組條件
+JSON 保留的逐條結果中，每個 warning 有 `path`、`line`、`col`、`lint_id`、`message` 及 `severity`，summary 有 `warning_count` 與 `files`。 行與欄從 1 開始，欄位計算 Unicode code point，內部視窗仍保留原位元組意義，例如 L105 的 18 位元組條件
 
 文字與 Markdown 報告依「檔案、行、欄、共同問題」合併診斷，分別計算問題數與原規則命中數。 首批合併為 L001／L002、L011／L107 及 L105／L108，各項理由仍有原 ID、訊息、狀態與來源條款。 同行不同位置及同位置不同問題會分別呈現
 
@@ -48,7 +53,7 @@ JSON 保留逐條結果。 每個 warning 有 `path`、`line`、`col`、`lint_id
 
 ## 主題導覽
 
-這 15 個主題用於查找相關規則。 95 個原 ID 均有保存，另新增 L137、L138，共 97 個 ID，88 條有自動實作，86 條預設啟用。 9 條人工審閱項目為 L104、L109、L110、L117、L119、L131、L132、L133 及 L134
+下表依 15 個主題列出相關規則，保存全部 95 個原 ID，另新增 L137、L138，共 97 個 ID。 其中 88 條有自動實作、86 條預設啟用，9 條人工審閱項目為 L104、L109、L110、L117、L119、L131、L132、L133 及 L134
 
 | 主題 | 原 ID |
 | --- | --- |
@@ -71,8 +76,8 @@ JSON 保留逐條結果。 每個 warning 有 `path`、`line`、`col`、`lint_id
 ## 執行資料與實作
 
 - `lintlib/core.py` 提供文件視圖與定位介面，`document_views.py` 保存行分類與 glossary 解析
-- `lintlib/clauses.py` 共用保護區、書目、子句及語言訊號。 `byte_patterns.py` 保留原 ASCII 類別與位元組匹配語義
-- `lintlib/rules/` 的九個模組按共用分析分配 88 條實作。 三組重疊規則共用候選掃描，原 ID 在條件判斷後仍各自產生理由
+- `lintlib/clauses.py` 共用保護區、書目、子句及語言訊號，`byte_patterns.py` 則保留原 ASCII 類別與位元組匹配語義
+- `lintlib/rules/` 的九個模組按共用分析分配 88 條實作，其中三組重疊規則共用候選掃描，原 ID 在條件判斷後仍各自產生理由
 - `lintlib/rules/prose_clarity.py` 以窄句型找 L137 保證／排除候選，並檢查文件及每個標題後首個正文段落的 L138 開頭候選。 兩者皆為人工核對上下文、來源與任務用途的提示，限制與誤報見[文風目錄](catalog/prose_clarity.md)
 - `lintlib/lexicons.py` 從 `linter/data/lexicons.json` 載入唯一的領域詞表
 - `lintlib/registry.py` 選擇及分派原 ID，`report.py` 產生原始 JSON 與合併報告

@@ -1,13 +1,15 @@
 # 句讀、列舉與連接詞
 
-本目錄保存各 ID 的判準、來源條款、提示與風險說明。 執行時的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表保存在 `linter/data/lexicons.json`
+各 ID 的判準、來源條款、提示與風險說明保存在本目錄，執行時使用的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表則保存在 `linter/data/lexicons.json`
 
 ### L021 `semicolon_overuse`
 
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 3.5
 - signal：prose 過度依賴分號串接子句，或短句中出現低價值的單一分號
-- detection strategy：偵測一般 prose line 與 list item 中的 `；` / `;` 數量。 若有兩個以上就直接警告，包含可能合法的平行列舉。 單一分號則只在短句且前後都像完整子句時警告
+- detection strategy：偵測一般 prose line 與 list item 中的 `；` / `;` 數量，依下列條件警告：
+  - 有兩個以上就直接警告，包含可能合法的平行列舉
+  - 單一分號只在短句且前後都像完整子句時警告
 - needs source context：否
 - auxiliary inputs：分號次數門檻
 - warning message：`這裡的分號可能沒有必要，若不是平行列舉同一目的下的不同對象，請拆句、改逗號或重寫`
@@ -31,7 +33,7 @@
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 3.5
 - signal：出現任何破折號（`──`、`—`、`–`）作為 prose 插入或中斷標記
-- detection strategy：逐行掃描 masked_text，每個出現點都發 warning。 code block、inline code、blockquote 與 table 內不觸發
+- detection strategy：逐行掃描 masked_text，每個出現點都發 warning，code block、inline code、blockquote 與 table 內不觸發
 - needs source context：否
 - auxiliary inputs：無
 - warning message：`偵測到破折號，請改用逗號、冒號、括號、分句或重寫處理`

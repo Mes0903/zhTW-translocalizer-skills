@@ -1,6 +1,6 @@
 # 引用、書目與連結
 
-本目錄保存各 ID 的判準、來源條款、提示與風險說明。 執行時的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表保存在 `linter/data/lexicons.json`
+各 ID 的判準、來源條款、提示與風險說明保存在本目錄，執行時使用的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表則保存在 `linter/data/lexicons.json`
 
 ### L015 `academic_citation_missing_reference_section`
 
@@ -19,7 +19,7 @@
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 4.3
 - signal：正文 formal citation 的顯示 label / target 與文末 anchor entry 對不上，例如 `[[L09]](#7)` 指到的 entry 不是 `[L09]`，或引用 target 根本不存在
-- detection strategy：收集正文 `<sup>...</sup>` 內所有 `[[label]](#target)`，再比對 `References` 區段中的 `- <a id="target">[label]</a>`。 會檢查缺漏、重複 anchor id、重複 label 與 label-target mismatch。 單純存在未被正文引用的 reference entry 不算 warning
+- detection strategy：收集正文 `<sup>...</sup>` 內所有 `[[label]](#target)`，再比對 `References` 區段中的 `- <a id="target">[label]</a>`，檢查缺漏、重複 anchor id、重複 label 與 label-target mismatch。 單純存在未被正文引用的 reference entry 不算 warning
 - needs source context：否
 - auxiliary inputs：無
 - warning message：`citation 編號與 reference list 可能沒有一一對上，請檢查缺漏、重複項或 id 與顯示編號不一致`
@@ -31,7 +31,7 @@
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 4.4
 - signal：Markdown link URL 內含外部來源或廣告追蹤 query 參數，例如 `fbclid`、`utm_source=chatgpt.com`、`utm_*`、`gclid`、`msclkid`
-- detection strategy：解析非 image 的 inline Markdown link，只檢查 URL 的 query string，不檢查 fragment。 若 query parameter 名稱屬 tracking 參數，則發 warning。 `#:~:text=...`、`#section` 等 fragment 保留不視為 tracking
+- detection strategy：解析非 image 的 inline Markdown link，只檢查 URL 的 query string，若 query parameter 名稱屬 tracking 參數，則發 warning。 fragment 不納入檢查，`#:~:text=...`、`#section` 等 fragment 保留不視為 tracking
 - needs source context：否
 - auxiliary inputs：tracking query parameter 名單
 - warning message：`Markdown link URL 不應保留 fbclid、utm_* 等外部來源追蹤參數，請只保留原始連結`
@@ -43,7 +43,10 @@
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 4.3
 - signal：formal `References` entry 把 bibliographic 主行、URL 與中文說明擠在同一行，或把 URL 和說明塞進同一個子列點
-- detection strategy：只檢查 `## 引用文獻` / `## References` 區段。 top-level reference item 若主行含 URL、Markdown link 或 CJK 內容就發 warning。 子列點若含 URL 但不是純 URL 單行，也發 warning。 URL 子列點只接受裸 URL，不接受 `網址：...`、`Available at: ...` 或 URL 後面殘留說明文字
+- detection strategy：只在 `## 引用文獻` / `## References` 區段檢查下列情況：
+  - top-level reference item 若主行含 URL、Markdown link 或 CJK 內容就發 warning
+  - 子列點若含 URL 但不是純 URL 單行，也發 warning
+  - URL 子列點只接受裸 URL，不接受 `網址：...`、`Available at: ...` 或 URL 後面殘留說明文字
 - needs source context：否
 - auxiliary inputs：reference-section 邊界判定、URL 偵測
 - warning message：`formal reference entry 的 bibliographic 主行、URL 子列點與中文說明應分開，不要把它們擠在同一行或同一個子列點`
@@ -115,7 +118,7 @@
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 4.3
 - signal：`References` 中文說明子列點混入英文半形標點，例如 `時, OSSpinLock ...`，或整行以半形 `.` 收尾
-- detection strategy：只檢查 `## 引用文獻` / `## References` 區段中「不是純 URL」且含 CJK 的子列點。 若半形 `,` / `:` / `;` 的前後非空白鄰接字元有任一側是 CJK，或最後一個非空白字元是半形 `.`，就發 warning
+- detection strategy：只檢查 `## 引用文獻` / `## References` 區段中「不是純 URL」且含 CJK 的子列點，若半形 `,` / `:` / `;` 的前後非空白鄰接字元有任一側是 CJK，或最後一個非空白字元是半形 `.`，就發 warning
 - needs source context：否
 - auxiliary inputs：reference-section 邊界判定、URL 子列點排除
 - warning message：`References 的中文說明子列點應使用中文標點，避免半形 `,` / `:` / `;`，且一般不以半形 `.` 收尾`

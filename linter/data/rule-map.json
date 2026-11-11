@@ -1038,7 +1038,7 @@
       "implemented": true,
       "enabled_by_default": true,
       "owner_spec": "`references/output_grammar.md` 2.3、2.5",
-      "warning_message": "這裡的「有 + V」可能只是口氣填充或泛用完成標記，請檢查是否應改成普通句、已、曾或句尾「了」",
+      "warning_message": "這裡的「有 + V」可能只是口氣填充或泛用完成標記，請檢查是否應依語意改成普通句、表示完成的「已經……了」、表示經驗的「曾」或表示新狀態的句尾「了」",
       "summary": "you plus verb as generic aspect marker",
       "implementation": {
         "start_line": 3322

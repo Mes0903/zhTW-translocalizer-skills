@@ -1,8 +1,13 @@
 # Markdown 區塊與換行
 
-L001 與 L002 共用段落掃描。 L002 檢查至少兩行的 prose 段落。 L001 另要求至少三行、每行 8 至 60 個可見字，以及至少兩行具有句末標記。 同段重疊時合成一項診斷，各理由保留原 ID 與狀態。 `spec` 排除 L002，L001 仍可執行
+L001 與 L002 共用段落掃描，分別依下列條件產生理由：
 
-本目錄保存各 ID 的判準、來源條款、提示與風險說明。 執行時的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表保存在 `linter/data/lexicons.json`
+- L002 檢查至少兩行的 prose 段落
+- L001 另要求至少三行、每行 8 至 60 個可見字，以及至少兩行具有句末標記
+
+同段重疊時合成一項診斷，各理由保留原 ID 與狀態。 `spec` 排除 L002，L001 仍可執行
+
+各 ID 的判準、來源條款、提示與風險說明保存在本目錄，執行時使用的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表則保存在 `linter/data/lexicons.json`
 
 ### L001 `sentence_per_line_artifact`
 
@@ -63,7 +68,7 @@ L001 與 L002 共用段落掃描。 L002 檢查至少兩行的 prose 段落。 L
 - warning message：`偵測到純呈現層 HTML / CSS，應改為 Markdown 或移除`
 - false positive risk：中
 - autofix：否
-- runtime note：目前預設停用。 若要檢查，請用 `--rules L005` 手動開啟
+- runtime note：目前預設停用，若要檢查，請用 `--rules L005` 手動開啟
 
 ### L014 `missing_eof_newline`
 
@@ -82,7 +87,7 @@ L001 與 L002 共用段落掃描。 L002 檢查至少兩行的 prose 段落。 L
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 4.1
 - signal：一般 top-level code fence 前一行或後一行不是空行
-- detection strategy：逐行追蹤 fenced code block 的 opening / closing fence。 只檢查沒有縮排的 top-level fence。 縮排在 list item 內的 fence 先放行，讓上下文決定是否需要空行。 若 code fence 直接貼著 custom container opener / closer，則由 custom container 的內側空行規則決定，不由本規則另外要求空行
+- detection strategy：逐行追蹤 fenced code block 的 opening / closing fence，並只檢查沒有縮排的 top-level fence。 縮排在 list item 內的 fence 先放行，讓上下文決定是否需要空行。 若 code fence 直接貼著 custom container opener / closer，則由 custom container 的內側空行規則決定，不由本規則另外要求空行
 - needs source context：否
 - auxiliary inputs：無
 - warning message：`一般 code block 前後應保留空行。 若位於 list item 內可依上下文省略`
@@ -94,7 +99,10 @@ L001 與 L002 共用段落掃描。 L002 檢查至少兩行的 prose 段落。 L
 - 狀態：lint-ready
 - owner spec：`references/output_grammar.md` 4.1
 - signal：三個以上 `:` 形成的 Markdown custom container / directive fence 沒有像 code fence 一樣獨立成行，例如 opener 黏了說明文字、closer 黏在 prose 行尾、opener 後或 closer 前多留空行
-- detection strategy：逐行掃描非 code block 行的 `:{3,}` marker。 opener 允許任意非空 label token，但標準形式為 `:::label`。 closer 標準形式為 `:::`。 top-level container 外側比照 code fence 檢查空行，區塊內側不要求也不保留 opener 後與 closer 前的空行
+- detection strategy：逐行掃描非 code block 行的 `:{3,}` marker，依下列形式與空行條件檢查：
+  - opener 允許任意非空 label token，但標準形式為 `:::label`
+  - closer 標準形式為 `:::`
+  - top-level container 外側比照 code fence 檢查空行，區塊內側不要求也不保留 opener 後與 closer 前的空行
 - needs source context：否
 - auxiliary inputs：無
 - warning message：`Markdown custom container fence 應像 code fence 一樣獨立成行：opener/closer 不黏內容，區塊內側不多留空行`

@@ -1,6 +1,6 @@
 # 事件體貌與否定
 
-本目錄保存各 ID 的判準、來源條款、提示與風險說明。 執行時的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表保存在 `linter/data/lexicons.json`
+各 ID 的判準、來源條款、提示與風險說明保存在本目錄，執行時使用的規則狀態與訊息保存在 `linter/data/rule-map.json`，詞表則保存在 `linter/data/lexicons.json`
 
 ### L013 `aspect_le_mismatch`
 
@@ -22,7 +22,7 @@
 - detection strategy：偵測 `有 + 動詞` 樣式，排除真正的領屬句、存在句與少數語域白名單。 特別標記 `有完成`、`有支援`、`有初始化` 這類技術 prose 高風險搭配
 - needs source context：部分需要
 - auxiliary inputs：動詞詞表、語域白名單
-- warning message：`這裡的「有 + V」可能只是口氣填充或泛用完成標記，請檢查是否應改成普通句、已、曾或句尾「了」`
+- warning message：`這裡的「有 + V」可能只是口氣填充或泛用完成標記，請檢查是否應依語意改成普通句、表示完成的「已經……了」、表示經驗的「曾」或表示新狀態的句尾「了」`
 - false positive risk：高
 - autofix：否
 
