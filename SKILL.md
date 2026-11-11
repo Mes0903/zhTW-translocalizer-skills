@@ -39,7 +39,7 @@ python3 linter/lint.py --list-rules
 
 - 若 task scope 附近有 project-local glossary，先讀它
 - 若任務涉及 linter 規則、warning 解讀或 CLI 用法，補讀 `linter/README.md`
-- 起草或重新閱讀文字時，依 `references/workflow.md` 選用守則中的段落示範
+- 起草或重新閱讀文字時，依 `references/workflow.md` 3.3 選用 style 0.1、4.1、4.2、4.4 與 grammar 4.1 的相關段落示範
 - 使用者指定的文風參考、目前章節與相鄰已接受內容、任務來源、benchmark、退化案例與實作狀態，依該閱讀路徑讀取
 
 ## 執行原則
